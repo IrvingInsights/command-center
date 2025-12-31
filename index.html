@@ -5,175 +5,316 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irving Insights | Command Center</title>
     <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --card-bg: #ffffff;
-            --header-bg: #ffffff;
-            --text-main: #1c1e21;
-            --text-muted: #606770;
-            --border-ui: #dddfe2;
-            /* Professional Domain Accents */
-            --work: #0052cc;
-            --health: #00875a;
-            --admin: #f2994a;
-            --family: #de350b;
-            --finances: #00b8d9;
-            --learning: #6554c0;
-            --creative: #ff5630;
-            --personal: #505f79;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        body, html {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(180deg, #fef9f3 0%, #faf6f1 100%);
+            padding: 20px;
+            min-height: 100vh;
         }
 
         header {
-            background: var(--header-bg);
-            padding: 10px 25px;
+            max-width: 1400px;
+            margin: 0 auto 30px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid var(--border-ui);
             justify-content: space-between;
         }
 
-        .identity { display: flex; align-items: center; }
-        .logo { height: 45px; margin-right: 15px; border-radius: 4px; }
-        .title h1 { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Compact Dashboard Shelf */
-        .dashboard-shelf {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            padding: 15px 25px;
-            background: #fff;
-            border-bottom: 1px solid var(--border-ui);
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .shelf-box {
-            padding: 10px;
-            border: 1px solid var(--border-ui);
+        h1 {
+            font-size: 22px;
+            font-weight: 400;
+            color: #5f6368;
+            letter-spacing: 0.5px;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 40px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            background: #fafbfc;
+            font-size: 14px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+        .search-bar input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 1px 6px rgba(26,115,232,0.2);
+        }
 
-        .quick-links a {
-            text-decoration: none; color: #42526e; background: #fff; padding: 5px 12px;
-            font-size: 0.8rem; border-radius: 5px; border: 1px solid var(--border-ui); margin-right: 5px;
+        /* Pinned Section */
+        .section-label {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #5f6368;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
+        .pinned-section {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+        }
+
+        /* Masonry Grid */
+        .notes-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            column-count: 4;
+            column-gap: 16px;
+        }
+
+        @media (max-width: 1200px) {
+            .notes-container { column-count: 3; }
+        }
+
+        @media (max-width: 900px) {
+            .notes-container { column-count: 2; }
+        }
+
+        @media (max-width: 600px) {
+            .notes-container { column-count: 1; }
+        }
+
+        /* Card Styles */
+        .note-card {
+            break-inside: avoid;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 16px;
+            background: white;
+            box-shadow: 0 1px 2px rgba(60,64,67,0.1);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .note-card:hover {
+            box-shadow: 0 2px 8px rgba(60,64,67,0.15);
+        }
+
+        /* Color Variants */
+        .note-card.pink { background: #f5d7d9; border-color: #f0c1c4; }
+        .note-card.yellow { background: #fff4cc; border-color: #ffe89d; }
+        .note-card.coral { background: #f5c8c4; border-color: #f0b3ad; }
+        .note-card.teal { background: #cfe5e5; border-color: #b8d4d4; }
+        .note-card.purple { background: #e4d7f5; border-color: #d4c4f0; }
+        .note-card.beige { background: #f4ede1; border-color: #ebe0ce; }
+        .note-card.green { background: #d7f5d9; border-color: #c1f0c4; }
+        .note-card.blue { background: #d7e8f5; border-color: #c1daf0; }
+
+        .note-card h3 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .note-card .tag {
             display: inline-block;
+            font-size: 11px;
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.08);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
-        .urgent-link { color: var(--family); font-weight: 700; text-decoration: none; font-size: 0.85rem; }
-
-        /* Adaptive Command Grid */
-        .command-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 15px;
-            padding: 15px;
-            flex-grow: 1;
-            overflow-y: auto;
+        .calendar-embed {
+            width: 100%;
+            height: 300px;
+            border: none;
+            border-radius: 4px;
+            margin-top: 8px;
         }
 
-        .domain-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-ui);
-            border-radius: 10px;
-            height: 480px;
+        .note-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #3c4043;
+        }
+
+        .note-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .note-content li {
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .note-content li::before {
+            content: "□";
+            margin-right: 8px;
+            color: #5f6368;
+        }
+
+        .urgent-link {
+            display: inline-block;
+            background: #f28b82;
+            color: #5f0d00;
+            padding: 8px 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .urgent-link:hover {
+            background: #ea7a70;
+        }
+
+        .quick-actions {
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
         }
 
-        .domain-label {
-            padding: 8px 15px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            background: #f4f5f7;
-            border-bottom: 1px solid var(--border-ui);
-            display: flex;
-            justify-content: space-between;
+        .quick-actions a {
+            padding: 6px 12px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+            text-decoration: none;
+            color: #3c4043;
+            font-size: 12px;
+            font-weight: 500;
         }
 
-        /* Domain Accents */
-        .work { border-top: 5px solid var(--work); }
-        .health { border-top: 5px solid var(--health); }
-        .admin { border-top: 5px solid var(--admin); }
-        .family { border-top: 5px solid var(--family); }
-        .finances { border-top: 5px solid var(--finances); }
-        .learning { border-top: 5px solid var(--learning); }
-        .creative { border-top: 5px solid var(--creative); }
-        .personal { border-top: 5px solid var(--personal); }
+        .quick-actions a:hover {
+            background: rgba(0,0,0,0.1);
+        }
 
-        iframe { width: 100%; height: 100%; border: none; }
-        textarea { width: 100%; height: 40px; border: none; outline: none; resize: none; background: transparent; font-size: 0.9rem; font-family: inherit; }
+        textarea {
+            width: 100%;
+            min-height: 60px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+            margin-top: 8px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="identity">
-        <img src="command center logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
-        <div class="title"><h1>Irving Insights</h1></div>
+    <div class="logo-title">
+        <h1>📋 Irving Insights</h1>
+    </div>
+    <div class="search-bar">
+        <input type="text" placeholder="Search your command center...">
     </div>
 </header>
 
-<div class="dashboard-shelf">
-    <div class="shelf-box">
-        <div class="label">Daily Focus</div>
-        <textarea placeholder="Active objective..."></textarea>
-    </div>
-    
-    <div class="shelf-box">
-        <div class="label">Priority Alert</div>
-        <a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" class="urgent-link">⚠ Rent Payment Link</a>
-    </div>
+<div class="pinned-section">
+    <div class="section-label">Pinned</div>
+    <div class="notes-container">
+        <div class="note-card beige">
+            <div class="tag">Daily Focus</div>
+            <h3>Active Objective</h3>
+            <textarea placeholder="What's your priority today?"></textarea>
+        </div>
 
-    <div class="shelf-box">
-        <div class="label">Quick Actions</div>
-        <div class="quick-links">
-            <a href="https://keep.google.com" target="_blank">Keep</a>
-            <a href="https://reclaim.ai" target="_blank">Reclaim</a>
-            <a href="https://docs.google.com" target="_blank">Docs</a>
+        <div class="note-card coral">
+            <div class="tag">Priority Alert</div>
+            <h3>⚠ Action Required</h3>
+            <a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" class="urgent-link">Pay Rent</a>
+        </div>
+
+        <div class="note-card blue">
+            <div class="tag">Quick Actions</div>
+            <h3>Shortcuts</h3>
+            <div class="quick-actions">
+                <a href="https://keep.google.com" target="_blank">Keep</a>
+                <a href="https://reclaim.ai" target="_blank">Reclaim</a>
+                <a href="https://docs.google.com" target="_blank">Docs</a>
+            </div>
         </div>
     </div>
 </div>
 
-<main class="command-grid">
-    <div class="domain-card work"><div class="domain-label">WORK</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=998901f39fdcecc771918ab4198ccc1284a695b11dc43d19bfb0024e0c810da3%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+<div class="section-label">Domain Calendars</div>
+<div class="notes-container">
+    <div class="note-card blue">
+        <div class="tag">Work</div>
+        <h3>Work Calendar</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=998901f39fdcecc771918ab4198ccc1284a695b11dc43d19bfb0024e0c810da3%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-    <div class="domain-card health"><div class="domain-label">HEALTH</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=0879fd2f5b2598e55c31387c8f803d73d0345b16fd4606b97cd08fa017c0eaa7%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+
+    <div class="note-card green">
+        <div class="tag">Health</div>
+        <h3>Health & Wellness</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=0879fd2f5b2598e55c31387c8f803d73d0345b16fd4606b97cd08fa017c0eaa7%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-    <div class="domain-card admin"><div class="domain-label">ADMIN</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=8fee3bef2083ca300ecc251e1b35ccfb56d4889341fc89e7e126e91737684577%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+
+    <div class="note-card yellow">
+        <div class="tag">Admin</div>
+        <h3>Administrative Tasks</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=8fee3bef2083ca300ecc251e1b35ccfb56d4889341fc89e7e126e91737684577%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-    <div class="domain-card family"><div class="domain-label">FAMILY</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=family01917596261905213245%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+
+    <div class="note-card pink">
+        <div class="tag">Family</div>
+        <h3>Family Events</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=family01917596261905213245%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-    <div class="domain-card finances"><div class="domain-label">FINANCES</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=98e5c966c145ed104ad101c3794d24ab1bc8f1e73c859013c6f766c5dcce7d51%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+
+    <div class="note-card teal">
+        <div class="tag">Finances</div>
+        <h3>Financial Calendar</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=98e5c966c145ed104ad101c3794d24ab1bc8f1e73c859013c6f766c5dcce7d51%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-    <div class="domain-card learning"><div class="domain-label">LEARNING</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=3d5dffc0573f9aae86d030782a05b1b0ab795426b405af58cca0ba760eb1ae7c%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+
+    <div class="note-card purple">
+        <div class="tag">Learning</div>
+        <h3>Education & Growth</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=3d5dffc0573f9aae86d030782a05b1b0ab795426b405af58cca0ba760eb1ae7c%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-    <div class="domain-card creative"><div class="domain-label">CREATIVE</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=f3fb05b489a37ad25d2d094aaa32dcdc4e9819a1490e231c6193e2455042c93b%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+
+    <div class="note-card coral">
+        <div class="tag">Creative</div>
+        <h3>Creative Projects</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=f3fb05b489a37ad25d2d094aaa32dcdc4e9819a1490e231c6193e2455042c93b%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-    <div class="domain-card personal"><div class="domain-label">PERSONAL</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=2a377dad7409dd8b9549795686708b8965f854ccd2574a9c99c5d71591a35ac4%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+
+    <div class="note-card beige">
+        <div class="tag">Personal</div>
+        <h3>Personal Life</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=2a377dad7409dd8b9549795686708b8965f854ccd2574a9c99c5d71591a35ac4%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-</main>
+</div>
 
 </body>
 </html>
