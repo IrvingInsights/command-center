@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irving Insights | Command Center</title>
     <style>
         :root {
@@ -33,13 +32,13 @@
             padding: 0.8rem 2rem;
             background: #000;
             border-bottom: 2px solid var(--neon-teal);
-            box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2);
         }
 
         .identity { display: flex; align-items: center; }
-        .logo { height: 50px; margin-right: 18px; border: 1px solid var(--neon-teal); border-radius: 4px; }
-        .title h1 { margin: 0; font-size: 1.2rem; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; }
-        .title p { margin: 0; font-size: 0.8rem; color: var(--neon-teal); opacity: 0.8; }
+        .logo { height: 60px; margin-right: 18px; border: 1px solid var(--neon-teal); border-radius: 4px; }
+        .title h1 { margin: 0; font-size: 1.4rem; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; }
+        .title p { margin: 0; font-size: 0.85rem; color: var(--neon-teal); opacity: 0.8; }
 
         .dashboard-shelf {
             display: grid;
@@ -88,7 +87,10 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transition: border-color 0.3s;
         }
+
+        .domain-card:hover { border-color: var(--neon-teal); }
 
         .domain-label {
             padding: 6px 12px;
@@ -96,6 +98,7 @@
             font-weight: 800;
             background: rgba(255,255,255,0.05);
             border-bottom: 1px solid var(--border-ui);
+            letter-spacing: 1px;
         }
 
         /* Domain Colors */
@@ -112,12 +115,11 @@
             width: 100%;
             height: 100%;
             border: none;
-            /* Applies dark mode filter */
             filter: invert(90%) hue-rotate(180deg) brightness(1.1);
         }
 
         textarea {
-            width: 100%; height: 40px; background: transparent; border: none; color: #fff; resize: none; outline: none; font-size: 0.9rem;
+            width: 100%; height: 45px; background: transparent; border: none; color: #fff; resize: none; outline: none; font-size: 0.9rem;
         }
     </style>
 </head>
@@ -136,45 +138,55 @@
 <div class="dashboard-shelf">
     <div class="shelf-box">
         <div class="label">Daily Focus (The Repair)</div>
-        <textarea placeholder="What will you improve today?"></textarea>
+        <textarea placeholder="Set your mission for today..."></textarea>
     </div>
     <div class="shelf-box">
-        <div class="label">Priority Links</div>
-        <div style="font-size: 0.85rem;"><a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" style="color:var(--neon-orange); text-decoration:none;">⚠ Rent Payment Link Active</a></div>
+        <div class="label">Urgent Flags</div>
+        <div style="font-size: 0.85rem; color: var(--neon-orange);">
+            ⚠ <a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" style="color:inherit; text-decoration: none;">Rent Payment Active</a>
+        </div>
     </div>
     <div class="shelf-box">
         <div class="label">Quick Actions</div>
         <div class="quick-links">
             <a href="https://keep.google.com" target="_blank">Keep</a>
             <a href="https://reclaim.ai" target="_blank">Reclaim</a>
+            <a href="https://docs.google.com" target="_blank">Docs</a>
         </div>
     </div>
 </div>
 
 <main class="command-grid">
     <div class="domain-card work"><div class="domain-label">WORK</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=998901f39fdcecc771918ab4198ccc1284a695b11dc43d19bfb0024e0c810da3%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=998901f39fdcecc771918ab4198ccc1284a695b11dc43d19bfb0024e0c810da3%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%234285F4&ctz=America%2FNew_York"></iframe>
     </div>
+
     <div class="domain-card health"><div class="domain-label">HEALTH</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=0879fd2f5b2598e55c31387c8f803d73d0345b16fd4606b97cd08fa017c0eaa7%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=0879fd2f5b2598e55c31387c8f803d73d0345b16fd4606b97cd08fa017c0eaa7%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%2334A853&ctz=America%2FNew_York"></iframe>
     </div>
+
     <div class="domain-card admin"><div class="domain-label">ADMIN</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=8fee3bef2083ca300ecc251e1b35ccfb56d4889341fc89e7e126e91737684577%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=8fee3bef2083ca300ecc251e1b35ccfb56d4889341fc89e7e126e91737684577%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23FBBC05&ctz=America%2FNew_York"></iframe>
     </div>
+
     <div class="domain-card family"><div class="domain-label">FAMILY</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=family01917596261905213245%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=family01917596261905213245%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23EA4335&ctz=America%2FNew_York"></iframe>
     </div>
+
     <div class="domain-card finances"><div class="domain-label">FINANCES</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=98e5c966c145ed104ad101c3794d24ab1bc8f1e73c859013c6f766c5dcce7d51%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=98e5c966c145ed104ad101c3794d24ab1bc8f1e73c859013c6f766c5dcce7d51%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%2310BCC9&ctz=America%2FNew_York"></iframe>
     </div>
+
     <div class="domain-card learning"><div class="domain-label">LEARNING</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=3d5dffc0573f9aae86d030782a05b1b0ab795426b405af58cca0ba760eb1ae7c%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=3d5dffc0573f9aae86d030782a05b1b0ab795426b405af58cca0ba760eb1ae7c%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23A142F4&ctz=America%2FNew_York"></iframe>
     </div>
+
     <div class="domain-card creative"><div class="domain-label">CREATIVE</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=f3fb05b489a37ad25d2d094aaa32dcdc4e9819a1490e231c6193e2455042c93b%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=f3fb05b489a37ad25d2d094aaa32dcdc4e9819a1490e231c6193e2455042c93b%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23F06292&ctz=America%2FNew_York"></iframe>
     </div>
+
     <div class="domain-card personal"><div class="domain-label">PERSONAL</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=2a377dad7409dd8b9549795686708b8965f854ccd2574a9c99c5d71591a35ac4%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=2a377dad7409dd8b9549795686708b8965f854ccd2574a9c99c5d71591a35ac4%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23E6EDF3&ctz=America%2FNew_York"></iframe>
     </div>
 </main>
 
