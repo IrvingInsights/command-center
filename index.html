@@ -114,15 +114,16 @@
             box-shadow: 0 2px 8px rgba(60,64,67,0.15);
         }
 
-        /* Color Variants */
-        .note-card.pink { background: #f5d7d9; border-color: #f0c1c4; }
-        .note-card.yellow { background: #fff4cc; border-color: #ffe89d; }
-        .note-card.coral { background: #f5c8c4; border-color: #f0b3ad; }
-        .note-card.teal { background: #cfe5e5; border-color: #b8d4d4; }
-        .note-card.purple { background: #e4d7f5; border-color: #d4c4f0; }
-        .note-card.beige { background: #f4ede1; border-color: #ebe0ce; }
-        .note-card.green { background: #d7f5d9; border-color: #c1f0c4; }
-        .note-card.blue { background: #d7e8f5; border-color: #c1daf0; }
+        /* Google Calendar Colors */
+        .note-card.peacock { background: #d7e8f5; border-color: #c1daf0; }  /* Blue calendars */
+        .note-card.sage { background: #cfe5e5; border-color: #b8d4d4; }     /* Teal */
+        .note-card.basil { background: #d7f5d9; border-color: #c1f0c4; }    /* Green/Yellow */
+        .note-card.flamingo { background: #f5d7d9; border-color: #f0c1c4; } /* Pink */
+        .note-card.tomato { background: #f5c8c4; border-color: #f0b3ad; }   /* Red/Coral */
+        .note-card.tangerine { background: #fce1c9; border-color: #f9d1aa; }/* Orange */
+        .note-card.graphite { background: #e8eaed; border-color: #d3d6da; } /* Gray */
+        .note-card.grape { background: #e4d7f5; border-color: #d4c4f0; }    /* Purple */
+        .note-card.banana { background: #fff4cc; border-color: #ffe89d; }   /* Yellow */
 
         .note-card h3 {
             font-size: 16px;
@@ -148,28 +149,6 @@
             border: none;
             border-radius: 4px;
             margin-top: 8px;
-        }
-
-        .note-content {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #3c4043;
-        }
-
-        .note-content ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .note-content li {
-            padding: 6px 0;
-            font-size: 13px;
-        }
-
-        .note-content li::before {
-            content: "□";
-            margin-right: 8px;
-            color: #5f6368;
         }
 
         .urgent-link {
@@ -241,19 +220,19 @@
 <div class="pinned-section">
     <div class="section-label">Pinned</div>
     <div class="notes-container">
-        <div class="note-card beige">
+        <div class="note-card basil">
             <div class="tag">Daily Focus</div>
             <h3>Active Objective</h3>
             <textarea placeholder="What's your priority today?"></textarea>
         </div>
 
-        <div class="note-card coral">
+        <div class="note-card tomato">
             <div class="tag">Priority Alert</div>
             <h3>⚠ Action Required</h3>
             <a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" class="urgent-link">Pay Rent</a>
         </div>
 
-        <div class="note-card blue">
+        <div class="note-card peacock">
             <div class="tag">Quick Actions</div>
             <h3>Shortcuts</h3>
             <div class="quick-actions">
@@ -265,40 +244,55 @@
     </div>
 </div>
 
-<div class="section-label">Domain Calendars</div>
+<div class="section-label">My Calendars</div>
 <div class="notes-container">
-    <div class="note-card blue">
-        <div class="tag">Work</div>
-Irving Insights    </div>
-
-    <div class="note-card green">
-        <div class="tag">Health</div>
-Health    </div>
-
-    <div class="note-card yellow">
-        <div class="tag">Admin</div>
-Bills + Paperwork        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=8fee3bef2083ca300ecc251e1b35ccfb56d4889341fc89e7e126e91737684577%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+    <div class="note-card peacock">
+        <div class="tag">Irving Insights</div>
+        <h3>Irving Insights</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=998901f39fdcecc771918ab4198ccc1284a695b11dc43d19bfb0024e0c810da3%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
 
-    <div class="note-card pink">
+    <div class="note-card flamingo">
+        <div class="tag">Health</div>
+        <h3>Health</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=0879fd2f5b2598e55c31387c8f803d73d0345b16fd4606b97cd08fa017c0eaa7%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+    </div>
+
+    <div class="note-card banana">
+        <div class="tag">Bills + Paperwork</div>
+        <h3>Bills + Paperwork</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=8fee3bef2083ca300ecc251e1b35ccfb56d4889341fc89e7e126e91737684577%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+    </div>
+
+    <div class="note-card tangerine">
         <div class="tag">Family</div>
-Personal & Home Tasks    </div>
+        <h3>Family</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=family01917596261905213245%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+    </div>
 
-    <div class="note-card teal">
-        <div class="tag">Finances</div>
-TBK    </div>
+    <div class="note-card grape">
+        <div class="tag">TBK</div>
+        <h3>TBK</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=98e5c966c145ed104ad101c3794d24ab1bc8f1e73c859013c6f766c5dcce7d51%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+    </div>
 
-    <div class="note-card purple">
-        <div class="tag">Learning</div>
-Book    </div>
+    <div class="note-card flamingo">
+        <div class="tag">Book</div>
+        <h3>Book</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=3d5dffc0573f9aae86d030782a05b1b0ab795426b405af58cca0ba760eb1ae7c%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+    </div>
 
-    <div class="note-card coral">
-        <div class="tag">Creative</div>
-Writing Topics    </div>
+    <div class="note-card peacock">
+        <div class="tag">Business Ideas</div>
+        <h3>Business Ideas</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=f3fb05b489a37ad25d2d094aaa32dcdc4e9819a1490e231c6193e2455042c93b%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+    </div>
 
-    <div class="note-card beige">
-        <div class="tag">Personal</div>
-Field Hockey    </div>
+    <div class="note-card graphite">
+        <div class="tag">Field Hockey</div>
+        <h3>Field Hockey</h3>
+        <iframe class="calendar-embed" src="https://calendar.google.com/calendar/embed?src=2a377dad7409dd8b9549795686708b8965f854ccd2574a9c99c5d71591a35ac4%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
+    </div>
 </div>
 
 </body>
