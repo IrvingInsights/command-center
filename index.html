@@ -2,191 +2,194 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irving Insights | Command Center</title>
     <style>
         :root {
-            --bg-color: #0b0e11;
-            --card-bg: #161b22;
-            --text-main: #e6edf3;
-            --neon-teal: #00f2ff;
-            --neon-orange: #ff8c00;
-            --neon-green: #a6ff00;
-            --border-ui: #30363d;
+            --bg-color: #f4f7f6; /* Soft light grey */
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --border-ui: #dfe6e9;
+            /* Domain Accent Colors - Refined for light theme */
+            --work: #0984e3;
+            --health: #00b894;
+            --admin: #fdcb6e;
+            --family: #d63031;
+            --finances: #00cec9;
+            --learning: #6c5ce7;
+            --creative: #e84393;
+            --personal: #b2bec3;
         }
 
         body, html {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0; padding: 0;
-            height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            min-height: 100vh;
         }
 
+        /* Portrait Header */
         header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.8rem 2rem;
-            background: #000;
-            border-bottom: 2px solid var(--neon-teal);
-            box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2);
-        }
-
-        .identity { display: flex; align-items: center; }
-        .logo { height: 60px; margin-right: 18px; border: 1px solid var(--neon-teal); border-radius: 4px; }
-        .title h1 { margin: 0; font-size: 1.4rem; color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; }
-        .title p { margin: 0; font-size: 0.85rem; color: var(--neon-teal); opacity: 0.8; }
-
-        .dashboard-shelf {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1.2fr;
-            gap: 15px;
-            padding: 12px 20px;
             background: var(--card-bg);
-            border-bottom: 1px solid var(--border-ui);
+            padding: 20px;
+            border-bottom: 2px solid var(--border-ui);
+            text-align: center;
         }
 
-        .shelf-box {
-            background: rgba(0,0,0,0.2);
-            border: 1px solid var(--border-ui);
-            padding: 10px;
+        .logo { 
+            max-height: 80px; 
+            margin-bottom: 10px; 
             border-radius: 6px;
         }
 
-        .label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: var(--neon-orange); margin-bottom: 6px; }
-        
-        .quick-links a {
-            text-decoration: none;
-            color: #fff;
-            background: #21262d;
-            padding: 6px 12px;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            margin-right: 8px;
-            border: 1px solid #444;
-            display: inline-block;
-        }
-        .quick-links a:hover { border-color: var(--neon-teal); }
+        .title h1 { margin: 0; font-size: 1.6rem; color: #2d3436; letter-spacing: 1px; }
+        .title p { margin: 0; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
 
+        /* Today's Focus Section */
+        .status-shelf {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .shelf-box {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-ui);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .label { font-size: 0.7rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+
+        .urgent-link { 
+            color: var(--family); 
+            font-weight: bold; 
+            text-decoration: none; 
+            font-size: 0.95rem;
+        }
+
+        .quick-links a {
+            display: inline-block;
+            text-decoration: none;
+            color: var(--text-main);
+            background: #f1f2f6;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-right: 8px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-ui);
+        }
+
+        /* Portrait Grid: Single column for phones, 2 for tablets */
         .command-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 12px;
-            padding: 12px;
-            flex-grow: 1;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 0 20px 40px 20px;
+        }
+
+        @media (min-width: 768px) {
+            .command-grid { grid-template-columns: 1fr 1fr; }
         }
 
         .domain-card {
-            background: #000;
-            border: 1px solid var(--border-ui);
-            border-radius: 8px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            height: 450px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            transition: border-color 0.3s;
+            border: 1px solid var(--border-ui);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-
-        .domain-card:hover { border-color: var(--neon-teal); }
 
         .domain-label {
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            background: rgba(255,255,255,0.05);
+            padding: 12px 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            background: #f9f9f9;
             border-bottom: 1px solid var(--border-ui);
-            letter-spacing: 1px;
         }
 
-        /* Domain Colors */
-        .work { border-top: 4px solid #4285F4; }
-        .health { border-top: 4px solid #34A853; }
-        .admin { border-top: 4px solid #FBBC05; }
-        .family { border-top: 4px solid #EA4335; }
-        .finances { border-top: 4px solid #10BCC9; }
-        .learning { border-top: 4px solid #A142F4; }
-        .creative { border-top: 4px solid #F06292; }
-        .personal { border-top: 4px solid #E6EDF3; }
+        /* Domain Accents */
+        .work { border-top: 6px solid var(--work); }
+        .health { border-top: 6px solid var(--health); }
+        .admin { border-top: 6px solid var(--admin); }
+        .family { border-top: 6px solid var(--family); }
+        .finances { border-top: 6px solid var(--finances); }
+        .learning { border-top: 6px solid var(--learning); }
+        .creative { border-top: 6px solid var(--creative); }
+        .personal { border-top: 6px solid var(--personal); }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            filter: invert(90%) hue-rotate(180deg) brightness(1.1);
-        }
-
+        iframe { width: 100%; height: 100%; border: none; }
+        
         textarea {
-            width: 100%; height: 45px; background: transparent; border: none; color: #fff; resize: none; outline: none; font-size: 0.9rem;
+            width: 100%; height: 60px; border: none; outline: none; resize: none;
+            font-size: 1rem; color: var(--text-main); font-family: inherit;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="identity">
-        <img src="command center logo.png" alt="Logo" class="logo">
-        <div class="title">
-            <h1>Irving Insights</h1>
-            <p>Unified Strategic Dashboard | Tikkun Olam</p>
-        </div>
+    <img src="command center logo.png" alt="Irving Insights" class="logo">
+    <div class="title">
+        <h1>Irving Insights</h1>
+        <p>Strategic Command Center | Tikkun Olam</p>
     </div>
 </header>
 
-<div class="dashboard-shelf">
+<div class="status-shelf">
     <div class="shelf-box">
         <div class="label">Daily Focus (The Repair)</div>
         <textarea placeholder="Set your mission for today..."></textarea>
     </div>
+
     <div class="shelf-box">
-        <div class="label">Urgent Flags</div>
-        <div style="font-size: 0.85rem; color: var(--neon-orange);">
-            ⚠ <a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" style="color:inherit; text-decoration: none;">Rent Payment Active</a>
-        </div>
+        <div class="label">Urgent Priority</div>
+        <a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" class="urgent-link">⚠ Action Required: Rent Payment Link Active</a>
     </div>
+
     <div class="shelf-box">
         <div class="label">Quick Actions</div>
         <div class="quick-links">
             <a href="https://keep.google.com" target="_blank">Keep</a>
             <a href="https://reclaim.ai" target="_blank">Reclaim</a>
-            <a href="https://docs.google.com" target="_blank">Docs</a>
+            <a href="https://docs.google.com" target="_blank">Workspace</a>
         </div>
     </div>
 </div>
 
 <main class="command-grid">
     <div class="domain-card work"><div class="domain-label">WORK</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=998901f39fdcecc771918ab4198ccc1284a695b11dc43d19bfb0024e0c810da3%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%234285F4&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=998901f39fdcecc771918ab4198ccc1284a695b11dc43d19bfb0024e0c810da3%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-
     <div class="domain-card health"><div class="domain-label">HEALTH</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=0879fd2f5b2598e55c31387c8f803d73d0345b16fd4606b97cd08fa017c0eaa7%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%2334A853&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=0879fd2f5b2598e55c31387c8f803d73d0345b16fd4606b97cd08fa017c0eaa7%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-
     <div class="domain-card admin"><div class="domain-label">ADMIN</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=8fee3bef2083ca300ecc251e1b35ccfb56d4889341fc89e7e126e91737684577%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23FBBC05&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=8fee3bef2083ca300ecc251e1b35ccfb56d4889341fc89e7e126e91737684577%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-
     <div class="domain-card family"><div class="domain-label">FAMILY</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=family01917596261905213245%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23EA4335&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=family01917596261905213245%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-
     <div class="domain-card finances"><div class="domain-label">FINANCES</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=98e5c966c145ed104ad101c3794d24ab1bc8f1e73c859013c6f766c5dcce7d51%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%2310BCC9&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=98e5c966c145ed104ad101c3794d24ab1bc8f1e73c859013c6f766c5dcce7d51%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-
     <div class="domain-card learning"><div class="domain-label">LEARNING</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=3d5dffc0573f9aae86d030782a05b1b0ab795426b405af58cca0ba760eb1ae7c%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23A142F4&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=3d5dffc0573f9aae86d030782a05b1b0ab795426b405af58cca0ba760eb1ae7c%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-
     <div class="domain-card creative"><div class="domain-label">CREATIVE</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=f3fb05b489a37ad25d2d094aaa32dcdc4e9819a1490e231c6193e2455042c93b%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23F06292&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=f3fb05b489a37ad25d2d094aaa32dcdc4e9819a1490e231c6193e2455042c93b%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
-
     <div class="domain-card personal"><div class="domain-label">PERSONAL</div>
-        <iframe src="https://calendar.google.com/calendar/embed?src=2a377dad7409dd8b9549795686708b8965f854ccd2574a9c99c5d71591a35ac4%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&color=%23E6EDF3&ctz=America%2FNew_York"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=2a377dad7409dd8b9549795686708b8965f854ccd2574a9c99c5d71591a35ac4%40group.calendar.google.com&mode=AGENDA&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&ctz=America%2FNew_York"></iframe>
     </div>
 </main>
 
