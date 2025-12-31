@@ -6,154 +6,136 @@
     <title>Irving Insights | Command Center</title>
     <style>
         :root {
-            --bg-color: #f4f7f6; /* Soft light grey */
+            --bg-color: #f0f2f5;
             --card-bg: #ffffff;
-            --text-main: #2d3436;
-            --text-muted: #636e72;
-            --border-ui: #dfe6e9;
-            /* Domain Accent Colors - Refined for light theme */
-            --work: #0984e3;
-            --health: #00b894;
-            --admin: #fdcb6e;
-            --family: #d63031;
-            --finances: #00cec9;
-            --learning: #6c5ce7;
-            --creative: #e84393;
-            --personal: #b2bec3;
+            --header-bg: #ffffff;
+            --text-main: #1c1e21;
+            --text-muted: #606770;
+            --border-ui: #dddfe2;
+            /* Professional Domain Accents */
+            --work: #0052cc;
+            --health: #00875a;
+            --admin: #f2994a;
+            --family: #de350b;
+            --finances: #00b8d9;
+            --learning: #6554c0;
+            --creative: #ff5630;
+            --personal: #505f79;
         }
 
         body, html {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0; padding: 0;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
 
-        /* Portrait Header */
         header {
-            background: var(--card-bg);
-            padding: 20px;
-            border-bottom: 2px solid var(--border-ui);
-            text-align: center;
-        }
-
-        .logo { 
-            max-height: 80px; 
-            margin-bottom: 10px; 
-            border-radius: 6px;
-        }
-
-        .title h1 { margin: 0; font-size: 1.6rem; color: #2d3436; letter-spacing: 1px; }
-        .title p { margin: 0; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
-
-        /* Today's Focus Section */
-        .status-shelf {
+            background: var(--header-bg);
+            padding: 10px 25px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            border-bottom: 1px solid var(--border-ui);
+            justify-content: space-between;
+        }
+
+        .identity { display: flex; align-items: center; }
+        .logo { height: 45px; margin-right: 15px; border-radius: 4px; }
+        .title h1 { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Compact Dashboard Shelf */
+        .dashboard-shelf {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
-            padding: 20px;
+            padding: 15px 25px;
+            background: #fff;
+            border-bottom: 1px solid var(--border-ui);
         }
 
         .shelf-box {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
+            padding: 10px;
             border: 1px solid var(--border-ui);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            background: #fafbfc;
         }
 
-        .label { font-size: 0.7rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
-
-        .urgent-link { 
-            color: var(--family); 
-            font-weight: bold; 
-            text-decoration: none; 
-            font-size: 0.95rem;
-        }
+        .label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
 
         .quick-links a {
+            text-decoration: none; color: #42526e; background: #fff; padding: 5px 12px;
+            font-size: 0.8rem; border-radius: 5px; border: 1px solid var(--border-ui); margin-right: 5px;
             display: inline-block;
-            text-decoration: none;
-            color: var(--text-main);
-            background: #f1f2f6;
-            padding: 8px 16px;
-            border-radius: 8px;
-            margin-right: 8px;
-            font-size: 0.85rem;
-            border: 1px solid var(--border-ui);
         }
 
-        /* Portrait Grid: Single column for phones, 2 for tablets */
+        .urgent-link { color: var(--family); font-weight: 700; text-decoration: none; font-size: 0.85rem; }
+
+        /* Adaptive Command Grid */
         .command-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            padding: 0 20px 40px 20px;
-        }
-
-        @media (min-width: 768px) {
-            .command-grid { grid-template-columns: 1fr 1fr; }
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+            padding: 15px;
+            flex-grow: 1;
+            overflow-y: auto;
         }
 
         .domain-card {
             background: var(--card-bg);
-            border-radius: 15px;
-            height: 450px;
+            border: 1px solid var(--border-ui);
+            border-radius: 10px;
+            height: 480px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid var(--border-ui);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .domain-label {
-            padding: 12px 15px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            background: #f9f9f9;
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: #f4f5f7;
             border-bottom: 1px solid var(--border-ui);
+            display: flex;
+            justify-content: space-between;
         }
 
         /* Domain Accents */
-        .work { border-top: 6px solid var(--work); }
-        .health { border-top: 6px solid var(--health); }
-        .admin { border-top: 6px solid var(--admin); }
-        .family { border-top: 6px solid var(--family); }
-        .finances { border-top: 6px solid var(--finances); }
-        .learning { border-top: 6px solid var(--learning); }
-        .creative { border-top: 6px solid var(--creative); }
-        .personal { border-top: 6px solid var(--personal); }
+        .work { border-top: 5px solid var(--work); }
+        .health { border-top: 5px solid var(--health); }
+        .admin { border-top: 5px solid var(--admin); }
+        .family { border-top: 5px solid var(--family); }
+        .finances { border-top: 5px solid var(--finances); }
+        .learning { border-top: 5px solid var(--learning); }
+        .creative { border-top: 5px solid var(--creative); }
+        .personal { border-top: 5px solid var(--personal); }
 
         iframe { width: 100%; height: 100%; border: none; }
-        
-        textarea {
-            width: 100%; height: 60px; border: none; outline: none; resize: none;
-            font-size: 1rem; color: var(--text-main); font-family: inherit;
-        }
+        textarea { width: 100%; height: 40px; border: none; outline: none; resize: none; background: transparent; font-size: 0.9rem; font-family: inherit; }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="command center logo.png" alt="Irving Insights" class="logo">
-    <div class="title">
-        <h1>Irving Insights</h1>
-        <p>Strategic Command Center | Tikkun Olam</p>
+    <div class="identity">
+        <img src="command center logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+        <div class="title"><h1>Irving Insights</h1></div>
     </div>
 </header>
 
-<div class="status-shelf">
+<div class="dashboard-shelf">
     <div class="shelf-box">
-        <div class="label">Daily Focus (The Repair)</div>
-        <textarea placeholder="Set your mission for today..."></textarea>
+        <div class="label">Daily Focus</div>
+        <textarea placeholder="Active objective..."></textarea>
     </div>
-
+    
     <div class="shelf-box">
-        <div class="label">Urgent Priority</div>
-        <a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" class="urgent-link">⚠ Action Required: Rent Payment Link Active</a>
+        <div class="label">Priority Alert</div>
+        <a href="https://teamk.twa.rentmanager.com?Locations=Default" target="_blank" class="urgent-link">⚠ Rent Payment Link</a>
     </div>
 
     <div class="shelf-box">
@@ -161,7 +143,7 @@
         <div class="quick-links">
             <a href="https://keep.google.com" target="_blank">Keep</a>
             <a href="https://reclaim.ai" target="_blank">Reclaim</a>
-            <a href="https://docs.google.com" target="_blank">Workspace</a>
+            <a href="https://docs.google.com" target="_blank">Docs</a>
         </div>
     </div>
 </div>
