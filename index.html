@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(180deg, #fef9f3 0%, #faf6f1 100%);
+            background: #2a2a2a;
             padding: 20px;
             min-height: 100vh;
         }
@@ -35,7 +35,7 @@
         h1 {
             font-size: 22px;
             font-weight: 400;
-            color: #5f6368;
+            color: #e0e0e0;
             letter-spacing: 0.5px;
         }
 
@@ -48,17 +48,18 @@
         .search-bar input {
             width: 100%;
             padding: 12px 20px;
-            border: 1px solid #e0e0e0;
+            border: 2px solid #00d9ff;
             border-radius: 8px;
             font-size: 14px;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: #1a1a1a;
+            color: #e0e0e0;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
         }
 
         .search-bar input:focus {
             outline: none;
-            border-color: #1a73e8;
-            box-shadow: 0 1px 6px rgba(26,115,232,0.2);
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
         }
 
         /* Pinned Section */
@@ -66,7 +67,7 @@
             font-size: 11px;
             font-weight: 500;
             text-transform: uppercase;
-            color: #5f6368;
+            color: #00d9ff;
             letter-spacing: 0.8px;
             margin-bottom: 16px;
             padding-left: 4px;
@@ -102,28 +103,29 @@
             break-inside: avoid;
             margin-bottom: 16px;
             border-radius: 8px;
-            border: 1px solid #e0e0e0;
+            border: 3px solid #00d9ff;
             padding: 16px;
             background: white;
-            box-shadow: 0 1px 2px rgba(60,64,67,0.1);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5), 0 2px 8px rgba(0,0,0,0.3);
             transition: all 0.2s ease;
             cursor: pointer;
         }
 
         .note-card:hover {
-            box-shadow: 0 2px 8px rgba(60,64,67,0.15);
+            box-shadow: 0 0 25px rgba(0, 217, 255, 0.8), 0 4px 12px rgba(0,0,0,0.4);
+            transform: translateY(-2px);
         }
 
         /* Google Calendar Colors */
-        .note-card.peacock { background: #d7e8f5; border-color: #c1daf0; }  /* Blue calendars */
-        .note-card.sage { background: #cfe5e5; border-color: #b8d4d4; }     /* Teal */
-        .note-card.basil { background: #d7f5d9; border-color: #c1f0c4; }    /* Green/Yellow */
-        .note-card.flamingo { background: #f5d7d9; border-color: #f0c1c4; } /* Pink */
-        .note-card.tomato { background: #f5c8c4; border-color: #f0b3ad; }   /* Red/Coral */
-        .note-card.tangerine { background: #fce1c9; border-color: #f9d1aa; }/* Orange */
-        .note-card.graphite { background: #e8eaed; border-color: #d3d6da; } /* Gray */
-        .note-card.grape { background: #e4d7f5; border-color: #d4c4f0; }    /* Purple */
-        .note-card.banana { background: #fff4cc; border-color: #ffe89d; }   /* Yellow */
+        .note-card.peacock { background: #d7e8f5; border-color: #00d9ff; }
+        .note-card.sage { background: #cfe5e5; border-color: #00d9ff; }
+        .note-card.basil { background: #d7f5d9; border-color: #00d9ff; }
+        .note-card.flamingo { background: #f5d7d9; border-color: #00d9ff; }
+        .note-card.tomato { background: #f5c8c4; border-color: #00d9ff; }
+        .note-card.tangerine { background: #fce1c9; border-color: #00d9ff; }
+        .note-card.graphite { background: #e8eaed; border-color: #00d9ff; }
+        .note-card.grape { background: #e4d7f5; border-color: #00d9ff; }
+        .note-card.banana { background: #fff4cc; border-color: #00d9ff; }
 
         .note-card h3 {
             font-size: 16px;
@@ -137,10 +139,11 @@
             display: inline-block;
             font-size: 11px;
             padding: 4px 8px;
-            background: rgba(0,0,0,0.08);
+            background: rgba(0,0,0,0.12);
             border-radius: 12px;
             margin-bottom: 8px;
             font-weight: 500;
+            color: #202124;
         }
 
         .calendar-embed {
@@ -149,6 +152,7 @@
             border: none;
             border-radius: 4px;
             margin-top: 8px;
+            opacity: 0.95;
         }
 
         .urgent-link {
@@ -176,33 +180,35 @@
 
         .quick-actions a {
             padding: 6px 12px;
-            background: rgba(0,0,0,0.05);
+            background: rgba(0,0,0,0.15);
             border-radius: 4px;
             text-decoration: none;
-            color: #3c4043;
+            color: #202124;
             font-size: 12px;
             font-weight: 500;
         }
 
         .quick-actions a:hover {
-            background: rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.25);
         }
 
         textarea {
             width: 100%;
             min-height: 60px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid rgba(0,0,0,0.2);
             border-radius: 4px;
             padding: 8px;
             font-family: inherit;
             font-size: 13px;
             resize: vertical;
             margin-top: 8px;
+            background: rgba(255,255,255,0.9);
         }
 
         textarea:focus {
             outline: none;
-            border-color: #1a73e8;
+            border-color: #00d9ff;
+            box-shadow: 0 0 8px rgba(0, 217, 255, 0.3);
         }
     </style>
 </head>
