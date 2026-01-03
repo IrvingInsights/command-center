@@ -21,9 +21,9 @@ jobs:
       - name: Run Notion to Google Calendar sync
         env:
           NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-          GOOGLE_CALENDAR_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CALENDAR_CREDENTIALS_JSON }}
-          DOMAIN_CALENDAR_MAP_JSON: ${{ secrets.DOMAIN_CALENDAR_MAP_JSON }}
+          NOTION_TASKS_DB_ID: ${{ secrets.NOTION_TASKS_DB_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          DOMAIN_CALENDAR_MAPPING: ${{ secrets.DOMAIN_CALENDAR_MAPPING }}
           TIMEZONE: 'America/New_York'
         run: |
           python notion_google_sync.py
