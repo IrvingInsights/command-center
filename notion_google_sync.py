@@ -164,7 +164,7 @@ def _parse_notion_date(date_dict: Dict[str, Any], tz: str) -> (_dt.datetime, _dt
 def sync_notion_to_calendar(notion: NotionClient, calendar_service, db_id: str, calendar_map: Dict[str, str], tz: str) -> None:
     """Synchronise Notion tasks to Google Calendar as all‑day events."""
     # Fetch tasks
-    tasks = notion.databases.query(database_id=db_id)
+    tasks = notion.databases.query(**{"database_id": db_id})
     for page in tasks.get("results", []):
         props = _get_task_properties(page)
         name = props.get("name")
