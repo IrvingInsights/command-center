@@ -2,220 +2,236 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Irving Insights | Content Pipeline</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CMS Pipeline">
+    <meta name="theme-color" content="#00d9ff">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <title>Content Pipeline</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --cyan: #00d9ff;
+            --bg: #2a2a2a;
+            --card: #1e1e1e;
+            --dark: #111;
+            --border: #3a3a3a;
+            --text: #e0e0e0;
+            --muted: #888;
+            --green: #4cdb85;
+            --amber: #ffb400;
+            --red: #ff6b6b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: #2a2a2a;
-            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 24px 16px;
+            padding: env(safe-area-inset-top, 16px) 16px env(safe-area-inset-bottom, 24px);
         }
 
+        /* ---- Header ---- */
         header {
-            max-width: 900px;
-            margin: 0 auto 24px;
+            max-width: 860px;
+            margin: 12px auto 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
             gap: 8px;
         }
-        h1 { font-size: 20px; font-weight: 400; color: #e0e0e0; letter-spacing: 0.5px; }
-        .back-link { font-size: 13px; color: #00d9ff; text-decoration: none; }
+        h1 { font-size: 19px; font-weight: 500; color: var(--text); }
+        .back-link { font-size: 13px; color: var(--cyan); text-decoration: none; }
 
         /* ---- Mode banner ---- */
         #mode-banner {
-            max-width: 900px;
-            margin: 0 auto 16px;
-            padding: 10px 16px;
+            max-width: 860px;
+            margin: 0 auto 14px;
+            padding: 10px 14px;
             border-radius: 8px;
             font-size: 13px;
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
+            transition: all 0.3s;
         }
-        #mode-banner.checking  { background: #222; color: #666; border: 1px solid #333; }
-        #mode-banner.connected { background: rgba(76,219,133,0.1); color: #4cdb85; border: 1px solid #4cdb85; }
-        #mode-banner.standalone { background: rgba(255,180,0,0.1); color: #ffb400; border: 1px solid #ffb400; }
+        #mode-banner.checking  { background: #222; color: #555; border: 1px solid #333; }
+        #mode-banner.server    { background: rgba(76,219,133,0.1); color: var(--green); border: 1px solid var(--green); }
+        #mode-banner.api       { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
+        #mode-banner.standalone{ background: rgba(255,180,0,0.1); color: var(--amber); border: 1px solid var(--amber); }
 
-        #mode-banner .badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 10px;
-            background: currentColor;
-            color: #111;
-            white-space: nowrap;
-            flex-shrink: 0;
+        .mode-chip {
+            font-size: 11px; font-weight: 700; padding: 2px 9px;
+            border-radius: 10px; background: currentColor; color: #111;
+            white-space: nowrap; flex-shrink: 0;
         }
-        #mode-banner .badge-label { color: inherit; }
+        .mode-desc { flex: 1; }
 
-        /* Server URL input (shown in standalone mode) */
-        #server-url-row {
-            max-width: 900px;
-            margin: 0 auto 16px;
-            display: none;
-            align-items: center;
-            gap: 8px;
+        /* ---- API key setup card ---- */
+        #apikey-card { display: none; }
+
+        .apikey-row { display: flex; gap: 8px; align-items: stretch; }
+        .apikey-row input {
+            flex: 1; background: var(--dark); border: 1.5px solid var(--border);
+            border-radius: 6px; color: var(--text); font-family: inherit;
+            font-size: 14px; padding: 10px 12px; letter-spacing: 0.5px;
         }
-        #server-url-row input {
-            flex: 1;
-            background: #111;
-            border: 1.5px solid #444;
-            border-radius: 6px;
-            color: #e0e0e0;
-            font-family: inherit;
-            font-size: 13px;
-            padding: 8px 12px;
-        }
-        #server-url-row input:focus { outline: none; border-color: #00d9ff; }
-        #retry-btn {
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1.5px solid #00d9ff;
-            background: transparent;
-            color: #00d9ff;
+        .apikey-row input:focus { outline: none; border-color: var(--cyan); }
+        #save-key-btn {
+            padding: 10px 18px; border-radius: 6px; font-size: 13px; font-weight: 700;
+            cursor: pointer; border: none; background: var(--cyan); color: #111;
             white-space: nowrap;
         }
-        #retry-btn:hover { background: rgba(0,217,255,0.1); }
+        #save-key-btn:active { opacity: 0.8; }
+
+        .apikey-hint {
+            font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5;
+        }
+        .apikey-hint a { color: var(--cyan); }
 
         /* ---- Cards ---- */
         .card {
-            max-width: 900px;
-            margin: 0 auto 20px;
-            background: #1e1e1e;
-            border: 2px solid #00d9ff;
-            border-radius: 10px;
-            padding: 22px 24px;
+            max-width: 860px;
+            margin: 0 auto 16px;
+            background: var(--card);
+            border: 2px solid var(--cyan);
+            border-radius: 12px;
+            padding: 20px 20px;
             box-shadow: 0 0 18px rgba(0,217,255,0.1);
         }
         .card-title {
-            font-size: 11px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 1px; color: #00d9ff; margin-bottom: 18px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--cyan); margin-bottom: 18px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 8px;
         }
 
         /* ---- Form ---- */
         .field { margin-bottom: 16px; }
         label {
-            display: block; font-size: 11px; font-weight: 600; color: #888;
+            display: block; font-size: 11px; font-weight: 700; color: var(--muted);
             text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 6px;
         }
         input[type="text"], select, textarea {
-            width: 100%; background: #111; border: 1.5px solid #3a3a3a;
-            border-radius: 6px; color: #e0e0e0; font-family: inherit;
-            font-size: 14px; padding: 10px 13px;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%; background: var(--dark); border: 1.5px solid var(--border);
+            border-radius: 8px; color: var(--text); font-family: inherit;
+            font-size: 16px; /* 16px prevents iOS zoom */
+            padding: 12px 14px;
+            transition: border-color 0.2s;
         }
         input[type="text"]:focus, select:focus, textarea:focus {
-            outline: none; border-color: #00d9ff;
-            box-shadow: 0 0 10px rgba(0,217,255,0.2);
+            outline: none; border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(0,217,255,0.15);
         }
-        textarea { min-height: 72px; resize: vertical; }
-        select { cursor: pointer; }
+        textarea { min-height: 80px; resize: vertical; }
+        select { cursor: pointer; appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center;
+            padding-right: 36px;
+        }
         select option { background: #1e1e1e; }
-        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        @media (max-width: 500px) { .row-2 { grid-template-columns: 1fr; } }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 460px) { .row-2 { grid-template-columns: 1fr; } }
 
         /* ---- Buttons ---- */
-        .btn-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; align-items: center; }
+        .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
         .btn {
-            padding: 10px 20px; border-radius: 6px; font-size: 13px;
-            font-weight: 600; cursor: pointer; border: none;
-            transition: all 0.15s; white-space: nowrap;
+            padding: 13px 22px; border-radius: 8px; font-size: 15px;
+            font-weight: 700; cursor: pointer; border: none;
+            transition: all 0.15s; min-height: 48px; /* mobile touch target */
         }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn:active:not(:disabled) { transform: scale(0.97); }
-        .btn-primary { background: #00d9ff; color: #111; }
-        .btn-primary:hover:not(:disabled) { background: #00c4e8; box-shadow: 0 0 12px rgba(0,217,255,0.4); }
-        .btn-secondary { background: transparent; color: #00d9ff; border: 1.5px solid #00d9ff; }
+        .btn:active:not(:disabled) { transform: scale(0.96); }
+        .btn-primary { background: var(--cyan); color: #111; }
+        .btn-primary:hover:not(:disabled) { background: #00c0e0; }
+        .btn-secondary { background: transparent; color: var(--cyan); border: 2px solid var(--cyan); }
         .btn-secondary:hover:not(:disabled) { background: rgba(0,217,255,0.08); }
-        .btn-danger { background: transparent; color: #ff6b6b; border: 1.5px solid #ff6b6b; }
-        .btn-danger:hover:not(:disabled) { background: rgba(255,107,107,0.08); }
+        .btn-danger { background: transparent; color: var(--red); border: 2px solid var(--red); }
+        .btn-sm {
+            padding: 8px 14px; font-size: 13px; border-radius: 6px; cursor: pointer;
+            border: 1.5px solid var(--cyan); background: transparent; color: var(--cyan);
+            min-height: 36px; font-weight: 600;
+        }
+        .btn-sm:active { opacity: 0.7; }
 
         .status-badge {
             display: inline-flex; align-items: center; gap: 6px;
-            font-size: 12px; font-weight: 500; padding: 5px 12px;
+            font-size: 12px; font-weight: 600; padding: 6px 14px;
             border-radius: 20px; margin-left: auto;
         }
-        .status-badge.idle    { background: #2a2a2a; color: #666; border: 1px solid #444; }
-        .status-badge.running { background: rgba(0,217,255,0.1); color: #00d9ff; border: 1px solid #00d9ff; }
-        .status-badge.done    { background: rgba(76,219,133,0.1); color: #4cdb85; border: 1px solid #4cdb85; }
-        .status-badge.error   { background: rgba(255,107,107,0.1); color: #ff6b6b; border: 1px solid #ff6b6b; }
-        .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+        .status-badge.idle     { background: #252525; color: #555; border: 1px solid #3a3a3a; }
+        .status-badge.running  { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
+        .status-badge.done     { background: rgba(76,219,133,0.1); color: var(--green); border: 1px solid var(--green); }
+        .status-badge.error    { background: rgba(255,107,107,0.1); color: var(--red); border: 1px solid var(--red); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
         .dot.pulse { animation: pulse 1s infinite; }
-        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
 
         /* ---- Stage chips ---- */
-        .stages { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+        .stages { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
         .stage-chip {
-            padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;
-            border: 1px solid #333; color: #555; background: #1a1a1a; transition: all 0.3s;
+            padding: 5px 13px; border-radius: 14px; font-size: 12px; font-weight: 600;
+            border: 1.5px solid #333; color: #555; background: #1a1a1a; transition: all 0.3s;
         }
-        .stage-chip.active   { border-color: #00d9ff; color: #00d9ff; background: rgba(0,217,255,0.08); }
-        .stage-chip.complete { border-color: #4cdb85; color: #4cdb85; background: rgba(76,219,133,0.08); }
+        .stage-chip.active   { border-color: var(--cyan);  color: var(--cyan);  background: rgba(0,217,255,0.08); }
+        .stage-chip.complete { border-color: var(--green); color: var(--green); background: rgba(76,219,133,0.08); }
 
         /* ---- Output ---- */
         #output-card { display: none; }
-        #output-box {
-            background: #0d0d0d; border: 1.5px solid #2a2a2a; border-radius: 6px;
-            padding: 18px 20px; font-size: 13.5px; line-height: 1.8;
-            white-space: pre-wrap; word-break: break-word;
-            max-height: 580px; overflow-y: auto;
-            color: #c8c8c8; font-family: 'Georgia', serif;
-        }
-        #output-box::-webkit-scrollbar { width: 5px; }
-        #output-box::-webkit-scrollbar-track { background: #111; }
-        #output-box::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
-        /* standalone: plain textarea for easy mobile copy */
+        #output-box {
+            background: #0c0c0c; border: 1.5px solid #252525; border-radius: 8px;
+            padding: 16px 18px; font-size: 15px; line-height: 1.8;
+            white-space: pre-wrap; word-break: break-word;
+            max-height: 55vh; overflow-y: auto;
+            color: #ccc; font-family: Georgia, 'Times New Roman', serif;
+        }
+        #output-box::-webkit-scrollbar { width: 4px; }
+        #output-box::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        /* Standalone: textarea so mobile can select-all easily */
         #standalone-box {
-            display: none;
-            width: 100%; background: #0d0d0d; border: 1.5px solid #2a2a2a;
-            border-radius: 6px; padding: 16px; font-size: 13px;
-            line-height: 1.7; color: #c8c8c8; font-family: 'Georgia', serif;
-            min-height: 300px; resize: vertical;
+            width: 100%; background: #0c0c0c; border: 1.5px solid #252525;
+            border-radius: 8px; padding: 16px; font-size: 14px;
+            line-height: 1.75; color: #ccc; font-family: Georgia, serif;
+            min-height: 280px; resize: vertical; display: none;
         }
 
         .cursor {
             display: inline-block; width: 2px; height: 1em;
-            background: #00d9ff; margin-left: 1px; vertical-align: text-bottom;
-            animation: blink 0.9s step-end infinite;
+            background: var(--cyan); margin-left: 1px; vertical-align: text-bottom;
+            animation: blink 0.85s step-end infinite;
         }
         @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
 
-        #saved-notice { display:none; margin-top:10px; font-size:12px; color:#4cdb85; }
+        #saved-notice { display:none; margin-top:10px; font-size:12px; color:var(--green); }
 
-        .copy-badge { font-size:11px; font-weight:700; color:#00d9ff; opacity:0; transition:opacity 0.3s; margin-left:4px; }
-        .copy-badge.show { opacity:1; }
+        .copy-feedback {
+            font-size: 12px; font-weight: 700; color: var(--cyan);
+            opacity: 0; transition: opacity 0.3s; margin-left: 6px;
+        }
+        .copy-feedback.show { opacity: 1; }
 
         /* ---- History ---- */
-        #history-card { display:none; }
-        .history-list { list-style:none; }
+        #history-card { display: none; }
+        .history-list { list-style: none; }
         .history-list li {
-            padding: 9px 10px; border-bottom: 1px solid #252525;
+            padding: 10px 8px; border-bottom: 1px solid #252525;
             display: flex; align-items: center; gap: 10px; font-size: 13px;
         }
         .history-list li:last-child { border-bottom: none; }
-        .history-meta { color:#555; font-size:11px; min-width:110px; text-align:right; flex-shrink:0; }
-        .history-title { flex:1; }
-        .btn-sm {
-            padding:4px 10px; font-size:11px; border-radius:4px; cursor:pointer;
-            border:1px solid #00d9ff; background:transparent; color:#00d9ff; flex-shrink:0;
-        }
-        .btn-sm:hover { background:rgba(0,217,255,0.1); }
+        .history-meta { color: #555; font-size: 11px; min-width: 100px; text-align: right; flex-shrink: 0; }
+        .history-title { flex: 1; line-height: 1.3; }
 
-        /* mobile tap targets */
-        @media (max-width: 600px) {
-            .btn { padding: 12px 18px; font-size: 14px; }
-            #output-box { font-size: 14px; }
+        /* ---- Key management row ---- */
+        #key-mgmt { font-size: 12px; color: var(--muted); margin-top: 10px; }
+        #key-mgmt button {
+            background: none; border: none; color: var(--red);
+            font-size: 12px; cursor: pointer; text-decoration: underline; padding: 0;
         }
     </style>
 </head>
@@ -223,19 +239,26 @@
 
 <header>
     <h1>✍️ Content Pipeline</h1>
-    <a class="back-link" href="index.html">← Command Center</a>
+    <a class="back-link" href="index.html">← Home</a>
 </header>
 
 <!-- MODE BANNER -->
 <div id="mode-banner" class="checking">
-    <span class="badge">⋯</span>
-    <span class="badge-label" id="banner-text">Checking for server…</span>
+    <span class="mode-chip">⋯</span>
+    <span class="mode-desc" id="banner-text">Detecting mode…</span>
 </div>
 
-<!-- SERVER URL ROW (shown when server not found) -->
-<div id="server-url-row">
-    <input type="text" id="server-url-input" placeholder="Server URL, e.g. http://192.168.1.10:5005">
-    <button id="retry-btn">Connect</button>
+<!-- API KEY SETUP -->
+<div class="card" id="apikey-card">
+    <div class="card-title">API Key Setup (one-time)</div>
+    <div class="apikey-row">
+        <input type="password" id="apikey-input" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+        <button id="save-key-btn">Save</button>
+    </div>
+    <p class="apikey-hint">
+        Your key is stored only on this device (localStorage). Never shared.<br>
+        Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>
+    </p>
 </div>
 
 <!-- INPUT FORM -->
@@ -244,7 +267,7 @@
     <form id="pipeline-form">
         <div class="field">
             <label for="title">Title / Idea</label>
-            <input type="text" id="title" placeholder="Paste from Notion content calendar…" required>
+            <input type="text" id="title" placeholder="Paste from Notion content calendar…" required autocomplete="off">
         </div>
         <div class="row-2">
             <div class="field">
@@ -269,7 +292,7 @@
         </div>
         <div class="field">
             <label for="notes">Notes</label>
-            <textarea id="notes" placeholder="Paste any notes from Notion entry, or leave blank…"></textarea>
+            <textarea id="notes" placeholder="Paste any notes from Notion, or leave blank…"></textarea>
         </div>
         <div class="btn-row">
             <button type="submit" class="btn btn-primary" id="run-btn">Run Pipeline</button>
@@ -278,32 +301,37 @@
                 <span class="dot"></span> Ready
             </span>
         </div>
+        <div id="key-mgmt" style="display:none">
+            API key saved. <button id="change-key-btn">Change key</button>
+        </div>
     </form>
 </div>
 
-<!-- OUTPUT (streaming — server mode) -->
+<!-- OUTPUT -->
 <div class="card" id="output-card">
-    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <div class="card-title">
         <span>Output</span>
-        <button class="btn btn-secondary" id="copy-btn" style="padding:5px 14px;font-size:12px;">
-            Copy <span class="copy-badge" id="copy-badge">✓ Copied</span>
-        </button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-sm" id="copy-btn" style="display:none">
+                Copy <span class="copy-feedback" id="copy-fb">✓</span>
+            </button>
+            <button class="btn-sm" id="copy-standalone-btn" style="display:none">
+                Copy Prompt <span class="copy-feedback" id="copy-standalone-fb">✓</span>
+            </button>
+            <button class="btn-sm" id="open-claude-btn" style="display:none">Claude.ai ↗</button>
+        </div>
     </div>
+
     <div class="stages">
         <div class="stage-chip" id="chip-1">① Research</div>
         <div class="stage-chip" id="chip-2">② Draft</div>
         <div class="stage-chip" id="chip-3">③ Editorial</div>
         <div class="stage-chip" id="chip-4">④ Posting</div>
     </div>
-    <!-- streaming mode -->
+
     <div id="output-box"></div>
-    <!-- standalone mode: selectable textarea for easy mobile copy -->
     <textarea id="standalone-box" readonly></textarea>
     <div id="saved-notice"></div>
-    <div id="standalone-actions" style="display:none;margin-top:14px;display:none;gap:10px;flex-wrap:wrap;">
-        <button class="btn btn-primary" id="copy-standalone-btn">Copy Prompt</button>
-        <button class="btn btn-secondary" id="open-claude-btn">Open Claude.ai ↗</button>
-    </div>
 </div>
 
 <!-- HISTORY -->
@@ -314,8 +342,15 @@
 
 <script>
 // -----------------------------------------------------------------------
-// Prompt template (mirrors content_pipeline.py exactly)
+// Constants
 // -----------------------------------------------------------------------
+const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+const MODEL = 'claude-opus-4-6';
+
+const SYSTEM_PROMPT = `You are Daniel Irving's CMS Overseer for a single content pipeline run. Your job is to take one content item from idea to post-ready in this session — research it, draft it, edit it, and hand off a clean posting instruction at the end.
+
+Do not ask for clarification unless something is genuinely ambiguous. Make reasonable decisions and flag them. Move through all stages sequentially and show your work at each stage before proceeding.`;
+
 function buildPrompt(title, platform, domain, notes) {
     const n = notes.trim() || 'none';
     return `CONTENT ITEM:
@@ -339,7 +374,7 @@ DANIEL'S IDENTITY (do not ask — this is fixed context):
 
 ## STAGE 1 — RESEARCH
 
-Research the topic above. Search the web if needed. Produce a Research Brief with:
+Research the topic above. Produce a Research Brief with:
 
 1. Key Findings — 3–5 bullets of what's true, current, and relevant
 2. Best Angles for Daniel — 3 numbered angles ranked by fit with his voice and authority
@@ -412,78 +447,94 @@ Session complete.`;
 }
 
 // -----------------------------------------------------------------------
-// Mode: 'unknown' | 'connected' | 'standalone'
+// Mode management: 'checking' | 'server' | 'api' | 'standalone'
 // -----------------------------------------------------------------------
-let mode = 'unknown';
+let mode = 'checking';
 let serverBase = window.location.origin;
 
-function setMode(m) {
-    mode = m;
+function setBanner(m, text) {
     const banner = document.getElementById('mode-banner');
-    const text   = document.getElementById('banner-text');
-    const urlRow = document.getElementById('server-url-row');
-    const runBtn = document.getElementById('run-btn');
-
-    if (m === 'connected') {
-        banner.className = 'connected';
-        banner.querySelector('.badge').textContent = '⚡ Connected';
-        text.textContent = `Server at ${serverBase} — Claude will stream live`;
-        urlRow.style.display = 'none';
-        runBtn.textContent = 'Run Pipeline';
-    } else if (m === 'standalone') {
-        banner.className = 'standalone';
-        banner.querySelector('.badge').textContent = '✂ Standalone';
-        text.textContent = 'No server found — will generate prompt to copy into Claude.ai';
-        urlRow.style.display = 'flex';
-        runBtn.textContent = 'Generate Prompt';
-    }
+    const chip   = banner.querySelector('.mode-chip');
+    const desc   = document.getElementById('banner-text');
+    banner.className = m;
+    const labels = { checking: '⋯', server: '⚡ Server', api: '🔑 API', standalone: '✂ Offline' };
+    chip.textContent = labels[m] || m;
+    desc.textContent = text;
 }
 
 async function checkServer(base) {
     try {
         const res = await fetch(base + '/health', {
             method: 'GET', cache: 'no-store',
-            signal: AbortSignal.timeout(2500),
+            signal: AbortSignal.timeout(2000),
         });
         return res.ok;
-    } catch {
-        return false;
-    }
+    } catch { return false; }
 }
+
+function getSavedKey() { return localStorage.getItem('anthropic_api_key') || ''; }
+function hasSavedKey()  { return !!getSavedKey(); }
 
 async function initMode() {
-    // 1. Try current origin (works when served by Flask)
-    if (await checkServer(serverBase)) { setMode('connected'); return; }
-    // 2. Try saved custom URL
-    const saved = localStorage.getItem('pipeline_server_url');
-    if (saved) {
-        serverBase = saved;
-        if (await checkServer(serverBase)) { setMode('connected'); return; }
+    // 1. Try Flask server (same origin or saved LAN URL)
+    const lanUrl = localStorage.getItem('pipeline_server_url');
+    if (lanUrl) serverBase = lanUrl;
+    if (await checkServer(serverBase)) {
+        mode = 'server';
+        setBanner('server', 'Flask server connected — output streams live');
+        document.getElementById('run-btn').textContent = 'Run Pipeline';
+        document.getElementById('key-mgmt').style.display = 'none';
+        return;
     }
-    setMode('standalone');
+
+    // 2. Saved API key → direct mode
+    if (hasSavedKey()) {
+        mode = 'api';
+        setBanner('api', 'Running directly via Anthropic API — no server needed');
+        document.getElementById('run-btn').textContent = 'Run Pipeline';
+        document.getElementById('key-mgmt').style.display = 'block';
+        return;
+    }
+
+    // 3. No server, no key → ask for key
+    mode = 'standalone';
+    setBanner('standalone', 'Enter your Anthropic API key below to run on-device');
+    document.getElementById('run-btn').textContent = 'Generate Prompt';
+    document.getElementById('apikey-card').style.display = 'block';
 }
 
-document.getElementById('retry-btn').addEventListener('click', async () => {
-    const val = document.getElementById('server-url-input').value.trim().replace(/\/$/, '');
-    if (!val) return;
-    serverBase = val;
-    localStorage.setItem('pipeline_server_url', val);
-    const ok = await checkServer(serverBase);
-    if (ok) {
-        setMode('connected');
-    } else {
-        document.getElementById('banner-text').textContent = `Can't reach ${val} — check the URL and try again`;
+// Save API key
+document.getElementById('save-key-btn').addEventListener('click', () => {
+    const key = document.getElementById('apikey-input').value.trim();
+    if (!key.startsWith('sk-ant')) {
+        alert('That doesn\'t look like an Anthropic API key (should start with sk-ant-)');
+        return;
     }
+    localStorage.setItem('anthropic_api_key', key);
+    document.getElementById('apikey-card').style.display = 'none';
+    mode = 'api';
+    setBanner('api', 'API key saved — running directly via Anthropic API');
+    document.getElementById('run-btn').textContent = 'Run Pipeline';
+    document.getElementById('key-mgmt').style.display = 'block';
+});
+
+document.getElementById('change-key-btn').addEventListener('click', () => {
+    localStorage.removeItem('anthropic_api_key');
+    document.getElementById('apikey-input').value = '';
+    document.getElementById('apikey-card').style.display = 'block';
+    document.getElementById('key-mgmt').style.display = 'none';
+    mode = 'standalone';
+    setBanner('standalone', 'Enter a new API key below');
 });
 
 // -----------------------------------------------------------------------
 // Stage tracking
 // -----------------------------------------------------------------------
 const STAGE_MARKERS = [
-    { chip: 'chip-1', pattern: /research complete\./i },
-    { chip: 'chip-2', pattern: /draft complete\./i },
-    { chip: 'chip-3', pattern: /final copy ready\./i },
-    { chip: 'chip-4', pattern: /session complete\./i },
+    { chip: 'chip-1', re: /research complete\./i },
+    { chip: 'chip-2', re: /draft complete\./i },
+    { chip: 'chip-3', re: /final copy ready\./i },
+    { chip: 'chip-4', re: /session complete\./i },
 ];
 let stagesComplete = 0;
 
@@ -495,7 +546,7 @@ function resetStages() {
 
 function updateStages(text) {
     for (let i = stagesComplete; i < STAGE_MARKERS.length; i++) {
-        if (STAGE_MARKERS[i].pattern.test(text)) {
+        if (STAGE_MARKERS[i].re.test(text)) {
             for (let j = 0; j <= i; j++)
                 document.getElementById(STAGE_MARKERS[j].chip).className = 'stage-chip complete';
             if (i + 1 < STAGE_MARKERS.length)
@@ -506,45 +557,44 @@ function updateStages(text) {
 }
 
 // -----------------------------------------------------------------------
-// Shared UI helpers
+// UI helpers
 // -----------------------------------------------------------------------
 function setStatus(state, label) {
-    const badge = document.getElementById('status-badge');
-    badge.className = 'status-badge ' + state;
-    badge.innerHTML = `<span class="dot${state === 'running' ? ' pulse' : ''}"></span> ${label}`;
+    const b = document.getElementById('status-badge');
+    b.className = 'status-badge ' + state;
+    b.innerHTML = `<span class="dot${state === 'running' ? ' pulse' : ''}"></span> ${label}`;
 }
 
-function showOutputCard(streamingMode) {
+function showOutput(streaming) {
     document.getElementById('output-card').style.display = 'block';
-    document.getElementById('output-box').style.display      = streamingMode ? 'block' : 'none';
-    document.getElementById('standalone-box').style.display  = streamingMode ? 'none'  : 'block';
-    document.getElementById('copy-btn').style.display        = streamingMode ? '' : 'none';
-    const sa = document.getElementById('standalone-actions');
-    sa.style.display = streamingMode ? 'none' : 'flex';
-    document.getElementById('output-card').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('output-box').style.display         = streaming ? 'block' : 'none';
+    document.getElementById('standalone-box').style.display     = streaming ? 'none'  : 'block';
+    document.getElementById('copy-btn').style.display           = streaming ? ''      : 'none';
+    document.getElementById('copy-standalone-btn').style.display= streaming ? 'none'  : '';
+    document.getElementById('open-claude-btn').style.display    = streaming ? 'none'  : '';
+    document.getElementById('output-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 let currentReader = null;
 let fullOutput = '';
 
 // -----------------------------------------------------------------------
-// CONNECTED MODE: stream from server
+// SERVER MODE: SSE from Flask
 // -----------------------------------------------------------------------
-async function runConnected(title, platform, domain, notes) {
+async function runServer(title, platform, domain, notes) {
     fullOutput = '';
     resetStages();
     document.getElementById('output-box').textContent = '';
     document.getElementById('saved-notice').style.display = 'none';
-    showOutputCard(true);
-
+    showOutput(true);
     setStatus('running', 'Running…');
     document.getElementById('run-btn').disabled = true;
     document.getElementById('stop-btn').style.display = 'inline-block';
 
-    const outputBox = document.getElementById('output-box');
+    const box = document.getElementById('output-box');
     const cursor = document.createElement('span');
     cursor.className = 'cursor';
-    outputBox.appendChild(cursor);
+    box.appendChild(cursor);
 
     try {
         const res = await fetch(serverBase + '/run', {
@@ -552,76 +602,165 @@ async function runConnected(title, platform, domain, notes) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, platform, domain, notes }),
         });
-
         currentReader = res.body.getReader();
-        const decoder = new TextDecoder();
+        const dec = new TextDecoder();
         let buf = '';
-
         while (true) {
             const { value, done } = await currentReader.read();
             if (done) break;
-            buf += decoder.decode(value, { stream: true });
-            const lines = buf.split('\n');
-            buf = lines.pop();
-
+            buf += dec.decode(value, { stream: true });
+            const lines = buf.split('\n'); buf = lines.pop();
             for (const line of lines) {
                 if (!line.startsWith('data: ')) continue;
                 let msg; try { msg = JSON.parse(line.slice(6)); } catch { continue; }
-
                 if (msg.type === 'token') {
                     fullOutput += msg.text;
                     cursor.insertAdjacentText('beforebegin', msg.text);
-                    outputBox.scrollTop = outputBox.scrollHeight;
+                    box.scrollTop = box.scrollHeight;
                     updateStages(fullOutput);
-
                 } else if (msg.type === 'done') {
-                    cursor.remove();
-                    setStatus('done', 'Complete');
-                    document.getElementById('run-btn').disabled = false;
-                    document.getElementById('stop-btn').style.display = 'none';
-                    document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip complete');
-                    const notice = document.getElementById('saved-notice');
-                    notice.textContent = `Saved → ${msg.file}`;
-                    notice.style.display = 'block';
-                    saveHistory({ title, platform, domain, notes, date: todayLabel() });
-                    renderHistory();
-
+                    finishRun(cursor, msg.file);
                 } else if (msg.type === 'error') {
                     cursor.remove();
                     setStatus('error', 'Error');
-                    outputBox.textContent += '\n\n⚠ ' + msg.message;
-                    document.getElementById('run-btn').disabled = false;
-                    document.getElementById('stop-btn').style.display = 'none';
+                    box.textContent += '\n\n⚠ ' + msg.message;
+                    resetRunBtn();
                 }
             }
         }
     } catch (err) {
         cursor.remove();
         if (err.name !== 'AbortError') {
-            setStatus('error', 'Connection lost');
-            document.getElementById('output-box').textContent += '\n\nConnection lost — is the server still running?';
-            // Offer to switch to standalone
-            setMode('standalone');
+            setStatus('error', 'Lost connection');
+            box.textContent += '\n\nServer connection lost.';
         }
-        document.getElementById('run-btn').disabled = false;
-        document.getElementById('stop-btn').style.display = 'none';
+        resetRunBtn();
     }
 }
 
 // -----------------------------------------------------------------------
-// STANDALONE MODE: generate prompt, show for copy
+// API MODE: direct Anthropic streaming from browser
+// -----------------------------------------------------------------------
+async function runApi(title, platform, domain, notes) {
+    const apiKey = getSavedKey();
+    fullOutput = '';
+    resetStages();
+    document.getElementById('output-box').textContent = '';
+    document.getElementById('saved-notice').style.display = 'none';
+    showOutput(true);
+    setStatus('running', 'Running…');
+    document.getElementById('run-btn').disabled = true;
+    document.getElementById('stop-btn').style.display = 'inline-block';
+
+    const box = document.getElementById('output-box');
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    box.appendChild(cursor);
+
+    let aborted = false;
+    const controller = new AbortController();
+    currentReader = { cancel: () => { aborted = true; controller.abort(); } };
+
+    try {
+        const res = await fetch(ANTHROPIC_API, {
+            method: 'POST',
+            signal: controller.signal,
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true',
+            },
+            body: JSON.stringify({
+                model: MODEL,
+                max_tokens: 8096,
+                stream: true,
+                system: SYSTEM_PROMPT,
+                messages: [{ role: 'user', content: buildPrompt(title, platform, domain, notes) }],
+            }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: { message: res.statusText } }));
+            throw new Error(err.error?.message || `HTTP ${res.status}`);
+        }
+
+        const reader = res.body.getReader();
+        const dec = new TextDecoder();
+        let buf = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buf += dec.decode(value, { stream: true });
+            const lines = buf.split('\n'); buf = lines.pop();
+            for (const line of lines) {
+                if (!line.startsWith('data: ')) continue;
+                const raw = line.slice(6).trim();
+                if (raw === '[DONE]') continue;
+                let evt; try { evt = JSON.parse(raw); } catch { continue; }
+
+                if (evt.type === 'content_block_delta') {
+                    const d = evt.delta;
+                    if (d.type === 'text_delta') {
+                        fullOutput += d.text;
+                        cursor.insertAdjacentText('beforebegin', d.text);
+                        box.scrollTop = box.scrollHeight;
+                        updateStages(fullOutput);
+                    }
+                    // skip thinking_delta silently
+                } else if (evt.type === 'message_stop') {
+                    finishRun(cursor, null);
+                }
+            }
+        }
+    } catch (err) {
+        cursor.remove();
+        if (!aborted) {
+            setStatus('error', 'Error');
+            box.textContent += '\n\n⚠ ' + err.message;
+            // If auth error, prompt to re-enter key
+            if (err.message.includes('401') || err.message.includes('authentication')) {
+                document.getElementById('apikey-card').style.display = 'block';
+            }
+        } else {
+            setStatus('idle', 'Stopped');
+        }
+        resetRunBtn();
+    }
+}
+
+// -----------------------------------------------------------------------
+// STANDALONE MODE: generate prompt for clipboard
 // -----------------------------------------------------------------------
 function runStandalone(title, platform, domain, notes) {
     const prompt = buildPrompt(title, platform, domain, notes);
     fullOutput = prompt;
     resetStages();
     document.getElementById('saved-notice').style.display = 'none';
-    showOutputCard(false);
-
+    showOutput(false);
     document.getElementById('standalone-box').value = prompt;
-    setStatus('done', 'Prompt ready');
+    setStatus('done', 'Prompt ready — copy and paste into Claude.ai');
     saveHistory({ title, platform, domain, notes, date: todayLabel() });
     renderHistory();
+}
+
+function finishRun(cursor, file) {
+    cursor.remove();
+    setStatus('done', 'Complete');
+    document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip complete');
+    resetRunBtn();
+    if (file) {
+        const n = document.getElementById('saved-notice');
+        n.textContent = `Saved → ${file}`;
+        n.style.display = 'block';
+    }
+}
+
+function resetRunBtn() {
+    document.getElementById('run-btn').disabled = false;
+    document.getElementById('stop-btn').style.display = 'none';
+    currentReader = null;
 }
 
 // -----------------------------------------------------------------------
@@ -635,8 +774,12 @@ document.getElementById('pipeline-form').addEventListener('submit', async functi
     const notes    = document.getElementById('notes').value;
     if (!title) return;
 
-    if (mode === 'connected') {
-        await runConnected(title, platform, domain, notes);
+    if (mode === 'server') {
+        await runServer(title, platform, domain, notes);
+    } else if (mode === 'api') {
+        await runApi(title, platform, domain, notes);
+        saveHistory({ title, platform, domain, notes, date: todayLabel() });
+        renderHistory();
     } else {
         runStandalone(title, platform, domain, notes);
     }
@@ -644,60 +787,51 @@ document.getElementById('pipeline-form').addEventListener('submit', async functi
 
 // Stop
 document.getElementById('stop-btn').addEventListener('click', () => {
-    if (currentReader) { currentReader.cancel(); currentReader = null; }
-    setStatus('idle', 'Stopped');
-    document.getElementById('run-btn').disabled = false;
-    document.getElementById('stop-btn').style.display = 'none';
+    currentReader?.cancel();
+    currentReader = null;
     document.querySelector('.cursor')?.remove();
+    setStatus('idle', 'Stopped');
+    resetRunBtn();
 });
 
-// Copy (streaming output)
+// Copy (streaming)
 document.getElementById('copy-btn').addEventListener('click', async () => {
     if (!fullOutput) return;
-    try {
-        await navigator.clipboard.writeText(fullOutput);
-        const b = document.getElementById('copy-badge');
-        b.classList.add('show');
-        setTimeout(() => b.classList.remove('show'), 2000);
-    } catch {
-        const range = document.createRange();
-        range.selectNodeContents(document.getElementById('output-box'));
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-    }
+    await copyText(fullOutput, 'copy-fb');
 });
 
-// Copy standalone prompt
+// Copy (standalone)
 document.getElementById('copy-standalone-btn').addEventListener('click', async () => {
-    const box = document.getElementById('standalone-box');
-    try {
-        await navigator.clipboard.writeText(box.value);
-        document.getElementById('copy-standalone-btn').textContent = '✓ Copied!';
-        setTimeout(() => { document.getElementById('copy-standalone-btn').textContent = 'Copy Prompt'; }, 2000);
-    } catch {
-        box.select();
-        document.execCommand('copy');
-    }
+    const val = document.getElementById('standalone-box').value;
+    if (!val) return;
+    await copyText(val, 'copy-standalone-fb');
 });
 
-// Open Claude.ai
 document.getElementById('open-claude-btn').addEventListener('click', () => {
     window.open('https://claude.ai/new', '_blank');
 });
+
+async function copyText(text, feedbackId) {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        // Android fallback: select the textarea
+        const box = document.getElementById('standalone-box');
+        if (box) { box.select(); document.execCommand('copy'); }
+    }
+    const fb = document.getElementById(feedbackId);
+    fb.classList.add('show');
+    setTimeout(() => fb.classList.remove('show'), 2000);
+}
 
 // -----------------------------------------------------------------------
 // History
 // -----------------------------------------------------------------------
 const HISTORY_KEY = 'pipeline_history';
-function loadHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; } }
-function saveHistory(entry) {
-    const h = loadHistory(); h.unshift(entry);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 20)));
-}
-function todayLabel() {
-    return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function loadHistory()    { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; } }
+function saveHistory(e)   { const h = loadHistory(); h.unshift(e); localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 20))); }
+function todayLabel()     { return new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }); }
+function escHtml(s)       { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function renderHistory() {
     const history = loadHistory();
@@ -706,17 +840,17 @@ function renderHistory() {
     if (!history.length) { card.style.display = 'none'; return; }
     card.style.display = 'block';
     list.innerHTML = '';
-    history.forEach((entry, idx) => {
+    history.forEach((e, i) => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <span class="history-title">${escHtml(entry.title)}</span>
-            <span class="history-meta">${escHtml(entry.platform)} · ${escHtml(entry.date)}</span>
-            <button class="btn-sm" data-idx="${idx}">Load</button>`;
+            <span class="history-title">${escHtml(e.title)}</span>
+            <span class="history-meta">${escHtml(e.platform)} · ${escHtml(e.date)}</span>
+            <button class="btn-sm" data-i="${i}">Load</button>`;
         list.appendChild(li);
     });
-    list.querySelectorAll('.btn-sm').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const e = history[+btn.dataset.idx];
+    list.querySelectorAll('.btn-sm').forEach(b => {
+        b.addEventListener('click', () => {
+            const e = history[+b.dataset.i];
             document.getElementById('title').value    = e.title;
             document.getElementById('platform').value = e.platform;
             document.getElementById('domain').value   = e.domain;
@@ -724,6 +858,13 @@ function renderHistory() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
+}
+
+// -----------------------------------------------------------------------
+// PWA service worker
+// -----------------------------------------------------------------------
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 
 // -----------------------------------------------------------------------

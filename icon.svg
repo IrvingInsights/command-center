@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="#1e1e1e"/>
+  <!-- Cyan border ring -->
+  <rect x="16" y="16" width="480" height="480" rx="68" fill="none" stroke="#00d9ff" stroke-width="20"/>
+  <!-- Pencil body -->
+  <rect x="160" y="90" width="80" height="260" rx="12" fill="#00d9ff" transform="rotate(15 256 256)"/>
+  <!-- Pencil tip -->
+  <polygon points="196,330 244,330 220,390" fill="#ffb400" transform="rotate(15 256 256)"/>
+  <!-- Pencil eraser cap -->
+  <rect x="160" y="82" width="80" height="36" rx="10" fill="#ff6b6b" transform="rotate(15 256 256)"/>
+  <!-- Pencil line detail -->
+  <rect x="175" y="100" width="50" height="8" rx="4" fill="rgba(0,0,0,0.25)" transform="rotate(15 256 256)"/>
+  <!-- Lines (representing text) -->
+  <rect x="120" y="380" width="200" height="14" rx="7" fill="#444"/>
+  <rect x="120" y="406" width="160" height="14" rx="7" fill="#333"/>
+  <rect x="120" y="432" width="180" height="14" rx="7" fill="#3a3a3a"/>
+</svg>
