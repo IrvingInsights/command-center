@@ -41,6 +41,7 @@ from pathlib import Path
 
 PLATFORMS = ["LinkedIn", "Substack", "X", "YouTube"]
 DOMAINS = ["Irving Insights", "Book", "TBK", "SubSignal", "Personal"]
+SYSTEM_MODEL = "claude-opus-4-6"
 
 SYSTEM_PROMPT = """You are Daniel Irving's CMS Overseer for a single content pipeline run.
 Your job is to take one content item from idea to post-ready in this session —
@@ -246,7 +247,7 @@ def run_pipeline(inputs: dict, save: bool = True) -> str:
     full_output = []
 
     with client.messages.stream(
-        model="claude-opus-4-6",
+        model=SYSTEM_MODEL,
         max_tokens=8096,
         thinking={"type": "adaptive"},
         system=SYSTEM_PROMPT,
