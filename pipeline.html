@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irving Insights | Content Pipeline</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #2a2a2a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        header {
+            max-width: 860px;
+            margin: 0 auto 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-title { display: flex; align-items: center; gap: 12px; }
+        h1 { font-size: 20px; font-weight: 400; color: #e0e0e0; letter-spacing: 0.5px; }
+
+        .back-link {
+            font-size: 13px;
+            color: #00d9ff;
+            text-decoration: none;
+            opacity: 0.8;
+        }
+        .back-link:hover { opacity: 1; }
+
+        /* ---- Card ---- */
+        .card {
+            max-width: 860px;
+            margin: 0 auto 24px;
+            background: #1e1e1e;
+            border: 2px solid #00d9ff;
+            border-radius: 10px;
+            padding: 28px 32px;
+            box-shadow: 0 0 20px rgba(0,217,255,0.15);
+        }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #00d9ff;
+            margin-bottom: 22px;
+        }
+
+        /* ---- Form ---- */
+        .field { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #9e9e9e;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 7px;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            background: #111;
+            border: 1.5px solid #444;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0,217,255,0.25);
+        }
+
+        textarea { min-height: 80px; resize: vertical; }
+
+        select { cursor: pointer; }
+        select option { background: #222; }
+
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* ---- Buttons ---- */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 26px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 11px 22px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            letter-spacing: 0.4px;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: #00d9ff;
+            color: #111;
+        }
+        .btn-primary:hover { background: #00c4e8; box-shadow: 0 0 12px rgba(0,217,255,0.5); }
+
+        .btn-secondary {
+            background: transparent;
+            color: #00d9ff;
+            border: 1.5px solid #00d9ff;
+        }
+        .btn-secondary:hover { background: rgba(0,217,255,0.08); }
+
+        .btn:active { transform: scale(0.97); }
+
+        /* ---- Output area ---- */
+        #output-card { display: none; }
+
+        #output-box {
+            background: #111;
+            border: 1.5px solid #333;
+            border-radius: 6px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 520px;
+            overflow-y: auto;
+            color: #d0d0d0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* ---- Copy feedback ---- */
+        .copy-badge {
+            display: inline-block;
+            background: #00d9ff;
+            color: #111;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .copy-badge.show { opacity: 1; }
+
+        /* ---- History ---- */
+        #history-card { display: none; }
+
+        .history-list { list-style: none; }
+        .history-list li {
+            padding: 9px 12px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .history-list li:last-child { border-bottom: none; }
+        .history-meta { color: #666; font-size: 11px; min-width: 120px; text-align: right; }
+        .history-title { flex: 1; }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #00d9ff;
+            background: transparent;
+            color: #00d9ff;
+        }
+        .btn-sm:hover { background: rgba(0,217,255,0.1); }
+
+        /* ---- CLI hint ---- */
+        .cli-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ---- Scrollbar ---- */
+        #output-box::-webkit-scrollbar { width: 6px; }
+        #output-box::-webkit-scrollbar-track { background: #1a1a1a; }
+        #output-box::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-title">
+        <h1>✍️ Content Pipeline</h1>
+    </div>
+    <a class="back-link" href="index.html">← Command Center</a>
+</header>
+
+<!-- INPUT FORM -->
+<div class="card">
+    <div class="card-title">Content Item</div>
+    <form id="pipeline-form">
+
+        <div class="field">
+            <label for="title">Title / Idea</label>
+            <input type="text" id="title" placeholder="Paste from Notion content calendar…" required>
+        </div>
+
+        <div class="row-2">
+            <div class="field">
+                <label for="platform">Platform</label>
+                <select id="platform">
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Substack">Substack</option>
+                    <option value="X">X / Twitter</option>
+                    <option value="YouTube">YouTube</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="domain">Domain</label>
+                <select id="domain">
+                    <option value="Irving Insights">Irving Insights</option>
+                    <option value="Book">Book</option>
+                    <option value="TBK">TBK</option>
+                    <option value="SubSignal">SubSignal</option>
+                    <option value="Personal">Personal</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" placeholder="Paste any notes from Notion entry, or leave blank…"></textarea>
+        </div>
+
+        <div class="btn-row">
+            <button type="submit" class="btn btn-primary">Generate Prompt</button>
+            <button type="button" class="btn btn-secondary" id="copy-btn" style="display:none">
+                Copy to Clipboard
+                <span class="copy-badge" id="copy-badge">Copied!</span>
+            </button>
+            <button type="button" class="btn btn-secondary" id="open-claude-btn" style="display:none">
+                Open Claude.ai ↗
+            </button>
+        </div>
+        <p class="cli-hint" id="cli-hint" style="display:none"></p>
+    </form>
+</div>
+
+<!-- OUTPUT: GENERATED PROMPT -->
+<div class="card" id="output-card">
+    <div class="card-title">Generated Prompt — ready to paste into Claude</div>
+    <div id="output-box"></div>
+</div>
+
+<!-- HISTORY -->
+<div class="card" id="history-card">
+    <div class="card-title">Recent Runs</div>
+    <ul class="history-list" id="history-list"></ul>
+</div>
+
+<script>
+// -----------------------------------------------------------------------
+// Template (mirrors content_pipeline.py PIPELINE_TEMPLATE exactly)
+// -----------------------------------------------------------------------
+const SYSTEM_PROMPT = `You are Daniel Irving's CMS Overseer for a single content pipeline run. Your job is to take one content item from idea to post-ready in this session — research it, draft it, edit it, and hand off a clean posting instruction at the end.
+
+Do not ask for clarification unless something is genuinely ambiguous. Make reasonable decisions and flag them. Move through all stages sequentially and show your work at each stage before proceeding.`;
+
+function buildPrompt(title, platform, domain, notes) {
+    const notesClean = notes.trim() || 'none';
+    return `CONTENT ITEM:
+- Title/Idea: ${title}
+- Platform: ${platform}
+- Domain: ${domain}
+- Notes: ${notesClean}
+
+---
+
+DANIEL'S IDENTITY (do not ask — this is fixed context):
+- Principal Consultant, Irving Insights Consulting — operational strategy and values-based planning for mission-driven nonprofits
+- Author-in-progress: "A Human Childhood in the Era of AI" — experiential education, formation theory, AI's impact on childhood
+- 30+ years in camp-based experiential education, 12 as Camp Sisol director
+- Authorial stance: witness/practitioner — not pundit, not policy advocate
+- Voice models: Scott Galloway (direct, provokes thought) meets bell hooks (grounded, relational, honest)
+- Philosophy: skeptical of tech solutionism; believes human formation > digital optimization
+- Avoid: buzzwords, listicles, "In today's world", "As we navigate", corporate hedging, AI-sounding prose
+
+---
+
+## STAGE 1 — RESEARCH
+
+Research the topic above. Search the web if needed. Produce a Research Brief with:
+
+1. Key Findings — 3–5 bullets of what's true, current, and relevant
+2. Best Angles for Daniel — 3 numbered angles ranked by fit with his voice and authority
+3. Anchor — the single best story, example, or statistic to build the piece around
+4. Sources — any links worth citing or saving
+5. Recommended Angle — which of the 3 you'll use and why (1 sentence)
+
+Output the Research Brief in full. Then pause and say: "Research complete. Proceeding to draft."
+
+---
+
+## STAGE 2 — DRAFT
+
+Using the Research Brief above and the recommended angle, write a complete first draft.
+
+Platform specs (apply the one that matches):
+- **LinkedIn post**: 150–300 words. No headers. Paragraph breaks every 2–3 lines. End with a single question or point of reflection. No hashtags yet.
+- **Substack article**: 600–1,200 words. Open with a personal scene or observation. 3 sections. Practical or reflective close.
+- **X thread**: 6–9 tweets. Hook tweet under 200 chars. Each tweet standalone but builds toward a conclusion. Number them (1/, 2/, etc.).
+- **YouTube script**: 800–1,500 words. Conversational register. Open with a question or scene. Two natural pause points marked [PAUSE].
+
+Write the full draft. Do not truncate. Then pause and say: "Draft complete. Proceeding to editorial pass."
+
+---
+
+## STAGE 3 — EDITORIAL PASS
+
+Review the draft against this checklist. Fix problems directly — don't just flag them:
+
+1. **Hook** — does the first sentence earn the second? Rewrite if not.
+2. **Voice** — does it sound like a human practitioner? Cut or rewrite any AI-sounding phrases.
+3. **Specificity** — is there at least one concrete detail, story, or number? Add one if missing.
+4. **Length** — is every sentence earning its place? Cut anything that doesn't.
+5. **Ending** — does it land with a point of view? Fix if it trails off.
+6. **Platform fit** — does the format and length match the platform? Adjust if not.
+
+Output the final polished version in full. Below it, write a 2-sentence editorial note: what you changed and why.
+
+Then suggest up to 3 hashtags if platform is LinkedIn or X. Skip for Substack and YouTube.
+
+Then pause and say: "Final copy ready. Proceeding to posting instructions."
+
+---
+
+## STAGE 4 — POSTING INSTRUCTIONS
+
+Output a clean, ready-to-execute posting block:
+
+---
+POSTING INSTRUCTIONS
+Platform: ${platform}
+Action: Navigate to the URL below, open the composer, paste the final copy exactly as written. Do not alter it.
+
+Platform URLs:
+- LinkedIn: https://www.linkedin.com/feed/ → click "Start a post"
+- Substack: https://substack.com/publish/post/new
+- X / Twitter: https://x.com/compose/tweet
+- YouTube: https://studio.youtube.com/
+
+Hashtags to append (LinkedIn/X only): [list or "none"]
+Visibility: Public
+
+After posting:
+1. Copy the URL of the published post
+2. Return here with the Post URL
+3. Log it in the Notion Content Calendar entry: ${title} → Status: Published, Post URL: [paste]
+---
+
+Session complete.`;
+}
+
+// -----------------------------------------------------------------------
+// CLI hint builder
+// -----------------------------------------------------------------------
+function buildCliHint(title, platform, domain, notes) {
+    const esc = s => s.replace(/"/g, '\\"');
+    const notesArg = notes.trim() ? `--notes "${esc(notes.trim())}"` : '--notes none';
+    return `python content_pipeline.py --title "${esc(title)}" --platform "${esc(platform)}" --domain "${esc(domain)}" ${notesArg}`;
+}
+
+// -----------------------------------------------------------------------
+// History (localStorage)
+// -----------------------------------------------------------------------
+const HISTORY_KEY = 'pipeline_history';
+
+function loadHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+    catch { return []; }
+}
+
+function saveHistory(entry) {
+    const history = loadHistory();
+    history.unshift(entry);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 20)));
+}
+
+function renderHistory() {
+    const history = loadHistory();
+    const historyCard = document.getElementById('history-card');
+    const list = document.getElementById('history-list');
+
+    if (history.length === 0) { historyCard.style.display = 'none'; return; }
+
+    historyCard.style.display = 'block';
+    list.innerHTML = '';
+    history.forEach((entry, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span class="history-title">${escHtml(entry.title)}</span>
+            <span class="history-meta">${escHtml(entry.platform)} · ${escHtml(entry.date)}</span>
+            <button class="btn-sm" data-idx="${idx}">Load</button>
+        `;
+        list.appendChild(li);
+    });
+
+    list.querySelectorAll('.btn-sm').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const entry = history[parseInt(btn.dataset.idx)];
+            document.getElementById('title').value = entry.title;
+            document.getElementById('platform').value = entry.platform;
+            document.getElementById('domain').value = entry.domain;
+            document.getElementById('notes').value = entry.notes;
+        });
+    });
+}
+
+function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// -----------------------------------------------------------------------
+// Form submit
+// -----------------------------------------------------------------------
+let currentPrompt = '';
+
+document.getElementById('pipeline-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const title    = document.getElementById('title').value.trim();
+    const platform = document.getElementById('platform').value;
+    const domain   = document.getElementById('domain').value;
+    const notes    = document.getElementById('notes').value;
+
+    if (!title) return;
+
+    currentPrompt = buildPrompt(title, platform, domain, notes);
+
+    // Show output card
+    const outputCard = document.getElementById('output-card');
+    const outputBox  = document.getElementById('output-box');
+    outputCard.style.display = 'block';
+    outputBox.textContent = currentPrompt;
+
+    // Show action buttons
+    document.getElementById('copy-btn').style.display = 'inline-flex';
+    document.getElementById('open-claude-btn').style.display = 'inline-flex';
+
+    // Show CLI hint
+    const hint = document.getElementById('cli-hint');
+    hint.style.display = 'block';
+    hint.textContent = '$ ' + buildCliHint(title, platform, domain, notes);
+
+    // Scroll to output
+    outputCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Save to history
+    saveHistory({
+        title,
+        platform,
+        domain,
+        notes,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    });
+    renderHistory();
+});
+
+// -----------------------------------------------------------------------
+// Copy button
+// -----------------------------------------------------------------------
+document.getElementById('copy-btn').addEventListener('click', async () => {
+    if (!currentPrompt) return;
+    try {
+        await navigator.clipboard.writeText(currentPrompt);
+        const badge = document.getElementById('copy-badge');
+        badge.classList.add('show');
+        setTimeout(() => badge.classList.remove('show'), 2000);
+    } catch {
+        // Fallback: select all in output box
+        const range = document.createRange();
+        range.selectNodeContents(document.getElementById('output-box'));
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+    }
+});
+
+// -----------------------------------------------------------------------
+// Open Claude.ai
+// -----------------------------------------------------------------------
+document.getElementById('open-claude-btn').addEventListener('click', () => {
+    window.open('https://claude.ai/new', '_blank');
+});
+
+// -----------------------------------------------------------------------
+// Init
+// -----------------------------------------------------------------------
+renderHistory();
+</script>
+</body>
+</html>
