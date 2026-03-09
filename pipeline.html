@@ -12,21 +12,80 @@
             background: #2a2a2a;
             color: #e0e0e0;
             min-height: 100vh;
-            padding: 30px 20px;
+            padding: 24px 16px;
         }
 
         header {
             max-width: 900px;
-            margin: 0 auto 28px;
+            margin: 0 auto 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-
         h1 { font-size: 20px; font-weight: 400; color: #e0e0e0; letter-spacing: 0.5px; }
+        .back-link { font-size: 13px; color: #00d9ff; text-decoration: none; }
 
-        .back-link { font-size: 13px; color: #00d9ff; text-decoration: none; opacity: 0.8; }
-        .back-link:hover { opacity: 1; }
+        /* ---- Mode banner ---- */
+        #mode-banner {
+            max-width: 900px;
+            margin: 0 auto 16px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        #mode-banner.checking  { background: #222; color: #666; border: 1px solid #333; }
+        #mode-banner.connected { background: rgba(76,219,133,0.1); color: #4cdb85; border: 1px solid #4cdb85; }
+        #mode-banner.standalone { background: rgba(255,180,0,0.1); color: #ffb400; border: 1px solid #ffb400; }
+
+        #mode-banner .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: currentColor;
+            color: #111;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        #mode-banner .badge-label { color: inherit; }
+
+        /* Server URL input (shown in standalone mode) */
+        #server-url-row {
+            max-width: 900px;
+            margin: 0 auto 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        #server-url-row input {
+            flex: 1;
+            background: #111;
+            border: 1.5px solid #444;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+        #server-url-row input:focus { outline: none; border-color: #00d9ff; }
+        #retry-btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid #00d9ff;
+            background: transparent;
+            color: #00d9ff;
+            white-space: nowrap;
+        }
+        #retry-btn:hover { background: rgba(0,217,255,0.1); }
 
         /* ---- Cards ---- */
         .card {
@@ -35,223 +94,129 @@
             background: #1e1e1e;
             border: 2px solid #00d9ff;
             border-radius: 10px;
-            padding: 26px 30px;
-            box-shadow: 0 0 20px rgba(0,217,255,0.12);
+            padding: 22px 24px;
+            box-shadow: 0 0 18px rgba(0,217,255,0.1);
         }
-
         .card-title {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #00d9ff;
-            margin-bottom: 20px;
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; color: #00d9ff; margin-bottom: 18px;
         }
 
         /* ---- Form ---- */
-        .field { margin-bottom: 18px; }
-
+        .field { margin-bottom: 16px; }
         label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            margin-bottom: 6px;
+            display: block; font-size: 11px; font-weight: 600; color: #888;
+            text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 6px;
         }
-
         input[type="text"], select, textarea {
-            width: 100%;
-            background: #111;
-            border: 1.5px solid #3a3a3a;
-            border-radius: 6px;
-            color: #e0e0e0;
-            font-family: inherit;
-            font-size: 14px;
-            padding: 10px 13px;
+            width: 100%; background: #111; border: 1.5px solid #3a3a3a;
+            border-radius: 6px; color: #e0e0e0; font-family: inherit;
+            font-size: 14px; padding: 10px 13px;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         input[type="text"]:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #00d9ff;
+            outline: none; border-color: #00d9ff;
             box-shadow: 0 0 10px rgba(0,217,255,0.2);
         }
         textarea { min-height: 72px; resize: vertical; }
         select { cursor: pointer; }
         select option { background: #1e1e1e; }
-
-        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        @media (max-width: 500px) { .row-2 { grid-template-columns: 1fr; } }
 
         /* ---- Buttons ---- */
-        .btn-row { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; align-items: center; }
-
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; align-items: center; }
         .btn {
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            letter-spacing: 0.3px;
-            transition: all 0.15s;
+            padding: 10px 20px; border-radius: 6px; font-size: 13px;
+            font-weight: 600; cursor: pointer; border: none;
+            transition: all 0.15s; white-space: nowrap;
         }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn:active:not(:disabled) { transform: scale(0.97); }
-
         .btn-primary { background: #00d9ff; color: #111; }
-        .btn-primary:hover:not(:disabled) { background: #00c4e8; box-shadow: 0 0 12px rgba(0,217,255,0.45); }
-
+        .btn-primary:hover:not(:disabled) { background: #00c4e8; box-shadow: 0 0 12px rgba(0,217,255,0.4); }
         .btn-secondary { background: transparent; color: #00d9ff; border: 1.5px solid #00d9ff; }
         .btn-secondary:hover:not(:disabled) { background: rgba(0,217,255,0.08); }
-
         .btn-danger { background: transparent; color: #ff6b6b; border: 1.5px solid #ff6b6b; }
         .btn-danger:hover:not(:disabled) { background: rgba(255,107,107,0.08); }
 
-        /* ---- Status badge ---- */
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 12px;
-            font-weight: 500;
-            padding: 5px 12px;
-            border-radius: 20px;
-            margin-left: auto;
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 500; padding: 5px 12px;
+            border-radius: 20px; margin-left: auto;
         }
         .status-badge.idle    { background: #2a2a2a; color: #666; border: 1px solid #444; }
-        .status-badge.running { background: rgba(0,217,255,0.12); color: #00d9ff; border: 1px solid #00d9ff; }
-        .status-badge.done    { background: rgba(0,200,100,0.12); color: #4cdb85; border: 1px solid #4cdb85; }
-        .status-badge.error   { background: rgba(255,107,107,0.12); color: #ff6b6b; border: 1px solid #ff6b6b; }
-
-        .dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: currentColor;
-        }
+        .status-badge.running { background: rgba(0,217,255,0.1); color: #00d9ff; border: 1px solid #00d9ff; }
+        .status-badge.done    { background: rgba(76,219,133,0.1); color: #4cdb85; border: 1px solid #4cdb85; }
+        .status-badge.error   { background: rgba(255,107,107,0.1); color: #ff6b6b; border: 1px solid #ff6b6b; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
         .dot.pulse { animation: pulse 1s infinite; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
 
-        /* ---- Stage progress ---- */
-        .stages {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-        }
+        /* ---- Stage chips ---- */
+        .stages { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
         .stage-chip {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            border: 1px solid #333;
-            color: #555;
-            background: #1a1a1a;
-            transition: all 0.3s;
+            padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;
+            border: 1px solid #333; color: #555; background: #1a1a1a; transition: all 0.3s;
         }
-        .stage-chip.active {
-            border-color: #00d9ff;
-            color: #00d9ff;
-            background: rgba(0,217,255,0.08);
-        }
-        .stage-chip.complete {
-            border-color: #4cdb85;
-            color: #4cdb85;
-            background: rgba(76,219,133,0.08);
-        }
+        .stage-chip.active   { border-color: #00d9ff; color: #00d9ff; background: rgba(0,217,255,0.08); }
+        .stage-chip.complete { border-color: #4cdb85; color: #4cdb85; background: rgba(76,219,133,0.08); }
 
-        /* ---- Output stream ---- */
+        /* ---- Output ---- */
         #output-card { display: none; }
-
         #output-box {
-            background: #0d0d0d;
-            border: 1.5px solid #2a2a2a;
-            border-radius: 6px;
-            padding: 18px 20px;
-            font-size: 13.5px;
-            line-height: 1.75;
-            white-space: pre-wrap;
-            word-break: break-word;
-            max-height: 600px;
-            overflow-y: auto;
-            color: #c8c8c8;
-            font-family: 'Georgia', serif;
+            background: #0d0d0d; border: 1.5px solid #2a2a2a; border-radius: 6px;
+            padding: 18px 20px; font-size: 13.5px; line-height: 1.8;
+            white-space: pre-wrap; word-break: break-word;
+            max-height: 580px; overflow-y: auto;
+            color: #c8c8c8; font-family: 'Georgia', serif;
         }
         #output-box::-webkit-scrollbar { width: 5px; }
         #output-box::-webkit-scrollbar-track { background: #111; }
         #output-box::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
+        /* standalone: plain textarea for easy mobile copy */
+        #standalone-box {
+            display: none;
+            width: 100%; background: #0d0d0d; border: 1.5px solid #2a2a2a;
+            border-radius: 6px; padding: 16px; font-size: 13px;
+            line-height: 1.7; color: #c8c8c8; font-family: 'Georgia', serif;
+            min-height: 300px; resize: vertical;
+        }
+
         .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1em;
-            background: #00d9ff;
-            margin-left: 1px;
-            vertical-align: text-bottom;
+            display: inline-block; width: 2px; height: 1em;
+            background: #00d9ff; margin-left: 1px; vertical-align: text-bottom;
             animation: blink 0.9s step-end infinite;
         }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
 
-        /* ---- File saved notice ---- */
-        #saved-notice {
-            display: none;
-            margin-top: 12px;
-            font-size: 12px;
-            color: #4cdb85;
-        }
+        #saved-notice { display:none; margin-top:10px; font-size:12px; color:#4cdb85; }
 
-        /* ---- Copy badge ---- */
-        .copy-badge {
-            font-size: 11px;
-            font-weight: 700;
-            color: #00d9ff;
-            opacity: 0;
-            transition: opacity 0.3s;
-            margin-left: 4px;
-        }
-        .copy-badge.show { opacity: 1; }
+        .copy-badge { font-size:11px; font-weight:700; color:#00d9ff; opacity:0; transition:opacity 0.3s; margin-left:4px; }
+        .copy-badge.show { opacity:1; }
 
         /* ---- History ---- */
-        #history-card { display: none; }
-
-        .history-list { list-style: none; }
+        #history-card { display:none; }
+        .history-list { list-style:none; }
         .history-list li {
-            padding: 9px 12px;
-            border-bottom: 1px solid #252525;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
+            padding: 9px 10px; border-bottom: 1px solid #252525;
+            display: flex; align-items: center; gap: 10px; font-size: 13px;
         }
         .history-list li:last-child { border-bottom: none; }
-        .history-meta { color: #555; font-size: 11px; min-width: 130px; text-align: right; }
-        .history-title { flex: 1; }
+        .history-meta { color:#555; font-size:11px; min-width:110px; text-align:right; flex-shrink:0; }
+        .history-title { flex:1; }
         .btn-sm {
-            padding: 4px 10px;
-            font-size: 11px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: 1px solid #00d9ff;
-            background: transparent;
-            color: #00d9ff;
+            padding:4px 10px; font-size:11px; border-radius:4px; cursor:pointer;
+            border:1px solid #00d9ff; background:transparent; color:#00d9ff; flex-shrink:0;
         }
-        .btn-sm:hover { background: rgba(0,217,255,0.1); }
+        .btn-sm:hover { background:rgba(0,217,255,0.1); }
 
-        /* ---- Server status pill ---- */
-        #server-pill {
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 16px;
+        /* mobile tap targets */
+        @media (max-width: 600px) {
+            .btn { padding: 12px 18px; font-size: 14px; }
+            #output-box { font-size: 14px; }
         }
-        #server-pill.online  { background: rgba(76,219,133,0.12); color: #4cdb85; border: 1px solid #4cdb85; }
-        #server-pill.offline { background: rgba(255,107,107,0.12); color: #ff6b6b; border: 1px solid #ff6b6b; }
     </style>
 </head>
 <body>
@@ -261,20 +226,26 @@
     <a class="back-link" href="index.html">← Command Center</a>
 </header>
 
+<!-- MODE BANNER -->
+<div id="mode-banner" class="checking">
+    <span class="badge">⋯</span>
+    <span class="badge-label" id="banner-text">Checking for server…</span>
+</div>
+
+<!-- SERVER URL ROW (shown when server not found) -->
+<div id="server-url-row">
+    <input type="text" id="server-url-input" placeholder="Server URL, e.g. http://192.168.1.10:5005">
+    <button id="retry-btn">Connect</button>
+</div>
+
 <!-- INPUT FORM -->
 <div class="card">
     <div class="card-title">Content Item</div>
-
-    <div id="server-pill" class="offline">
-        <span class="dot"></span> <span id="server-pill-text">Checking server…</span>
-    </div>
-
     <form id="pipeline-form">
         <div class="field">
             <label for="title">Title / Idea</label>
             <input type="text" id="title" placeholder="Paste from Notion content calendar…" required>
         </div>
-
         <div class="row-2">
             <div class="field">
                 <label for="platform">Platform</label>
@@ -296,12 +267,10 @@
                 </select>
             </div>
         </div>
-
         <div class="field">
             <label for="notes">Notes</label>
             <textarea id="notes" placeholder="Paste any notes from Notion entry, or leave blank…"></textarea>
         </div>
-
         <div class="btn-row">
             <button type="submit" class="btn btn-primary" id="run-btn">Run Pipeline</button>
             <button type="button" class="btn btn-danger" id="stop-btn" style="display:none">Stop</button>
@@ -312,26 +281,29 @@
     </form>
 </div>
 
-<!-- OUTPUT -->
+<!-- OUTPUT (streaming — server mode) -->
 <div class="card" id="output-card">
-    <div class="card-title" style="display:flex; align-items:center; justify-content:space-between;">
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <span>Output</span>
-        <div style="display:flex; gap:8px; align-items:center;">
-            <button class="btn btn-secondary" id="copy-btn" style="padding:5px 14px; font-size:12px;">
-                Copy <span class="copy-badge" id="copy-badge">✓ Copied</span>
-            </button>
-        </div>
+        <button class="btn btn-secondary" id="copy-btn" style="padding:5px 14px;font-size:12px;">
+            Copy <span class="copy-badge" id="copy-badge">✓ Copied</span>
+        </button>
     </div>
-
     <div class="stages">
         <div class="stage-chip" id="chip-1">① Research</div>
         <div class="stage-chip" id="chip-2">② Draft</div>
         <div class="stage-chip" id="chip-3">③ Editorial</div>
         <div class="stage-chip" id="chip-4">④ Posting</div>
     </div>
-
+    <!-- streaming mode -->
     <div id="output-box"></div>
+    <!-- standalone mode: selectable textarea for easy mobile copy -->
+    <textarea id="standalone-box" readonly></textarea>
     <div id="saved-notice"></div>
+    <div id="standalone-actions" style="display:none;margin-top:14px;display:none;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="copy-standalone-btn">Copy Prompt</button>
+        <button class="btn btn-secondary" id="open-claude-btn">Open Claude.ai ↗</button>
+    </div>
 </div>
 
 <!-- HISTORY -->
@@ -342,29 +314,170 @@
 
 <script>
 // -----------------------------------------------------------------------
-// Server health check
+// Prompt template (mirrors content_pipeline.py exactly)
 // -----------------------------------------------------------------------
-const SERVER = window.location.origin; // same host:port as Flask
+function buildPrompt(title, platform, domain, notes) {
+    const n = notes.trim() || 'none';
+    return `CONTENT ITEM:
+- Title/Idea: ${title}
+- Platform: ${platform}
+- Domain: ${domain}
+- Notes: ${n}
 
-async function checkServer() {
-    const pill = document.getElementById('server-pill');
-    const text = document.getElementById('server-pill-text');
-    try {
-        const res = await fetch(SERVER + '/health', { method: 'GET', cache: 'no-store' });
-        if (res.ok) {
-            pill.className = 'online';
-            text.textContent = 'Server online — API connected';
-            return true;
-        }
-    } catch {}
-    pill.className = 'offline';
-    text.textContent = 'Server offline — run: python pipeline_server.py';
-    return false;
+---
+
+DANIEL'S IDENTITY (do not ask — this is fixed context):
+- Principal Consultant, Irving Insights Consulting — operational strategy and values-based planning for mission-driven nonprofits
+- Author-in-progress: "A Human Childhood in the Era of AI" — experiential education, formation theory, AI's impact on childhood
+- 30+ years in camp-based experiential education, 12 as Camp Sisol director
+- Authorial stance: witness/practitioner — not pundit, not policy advocate
+- Voice models: Scott Galloway (direct, provokes thought) meets bell hooks (grounded, relational, honest)
+- Philosophy: skeptical of tech solutionism; believes human formation > digital optimization
+- Avoid: buzzwords, listicles, "In today's world", "As we navigate", corporate hedging, AI-sounding prose
+
+---
+
+## STAGE 1 — RESEARCH
+
+Research the topic above. Search the web if needed. Produce a Research Brief with:
+
+1. Key Findings — 3–5 bullets of what's true, current, and relevant
+2. Best Angles for Daniel — 3 numbered angles ranked by fit with his voice and authority
+3. Anchor — the single best story, example, or statistic to build the piece around
+4. Sources — any links worth citing or saving
+5. Recommended Angle — which of the 3 you'll use and why (1 sentence)
+
+Output the Research Brief in full. Then pause and say: "Research complete. Proceeding to draft."
+
+---
+
+## STAGE 2 — DRAFT
+
+Using the Research Brief above and the recommended angle, write a complete first draft.
+
+Platform specs (apply the one that matches):
+- **LinkedIn post**: 150–300 words. No headers. Paragraph breaks every 2–3 lines. End with a single question or point of reflection. No hashtags yet.
+- **Substack article**: 600–1,200 words. Open with a personal scene or observation. 3 sections. Practical or reflective close.
+- **X thread**: 6–9 tweets. Hook tweet under 200 chars. Each tweet standalone but builds toward a conclusion. Number them (1/, 2/, etc.).
+- **YouTube script**: 800–1,500 words. Conversational register. Open with a question or scene. Two natural pause points marked [PAUSE].
+
+Write the full draft. Do not truncate. Then pause and say: "Draft complete. Proceeding to editorial pass."
+
+---
+
+## STAGE 3 — EDITORIAL PASS
+
+Review the draft against this checklist. Fix problems directly — don't just flag them:
+
+1. **Hook** — does the first sentence earn the second? Rewrite if not.
+2. **Voice** — does it sound like a human practitioner? Cut or rewrite any AI-sounding phrases.
+3. **Specificity** — is there at least one concrete detail, story, or number? Add one if missing.
+4. **Length** — is every sentence earning its place? Cut anything that doesn't.
+5. **Ending** — does it land with a point of view? Fix if it trails off.
+6. **Platform fit** — does the format and length match the platform? Adjust if not.
+
+Output the final polished version in full. Below it, write a 2-sentence editorial note: what you changed and why.
+
+Then suggest up to 3 hashtags if platform is LinkedIn or X. Skip for Substack and YouTube.
+
+Then pause and say: "Final copy ready. Proceeding to posting instructions."
+
+---
+
+## STAGE 4 — POSTING INSTRUCTIONS
+
+Output a clean, ready-to-execute posting block:
+
+---
+POSTING INSTRUCTIONS
+Platform: ${platform}
+Action: Navigate to the URL below, open the composer, paste the final copy exactly as written. Do not alter it.
+
+Platform URLs:
+- LinkedIn: https://www.linkedin.com/feed/ → click "Start a post"
+- Substack: https://substack.com/publish/post/new
+- X / Twitter: https://x.com/compose/tweet
+- YouTube: https://studio.youtube.com/
+
+Hashtags to append (LinkedIn/X only): [list or "none"]
+Visibility: Public
+
+After posting:
+1. Copy the URL of the published post
+2. Return here with the Post URL
+3. Log it in the Notion Content Calendar entry: ${title} → Status: Published, Post URL: [paste]
+---
+
+Session complete.`;
 }
-checkServer();
 
 // -----------------------------------------------------------------------
-// Stage detection from streamed text
+// Mode: 'unknown' | 'connected' | 'standalone'
+// -----------------------------------------------------------------------
+let mode = 'unknown';
+let serverBase = window.location.origin;
+
+function setMode(m) {
+    mode = m;
+    const banner = document.getElementById('mode-banner');
+    const text   = document.getElementById('banner-text');
+    const urlRow = document.getElementById('server-url-row');
+    const runBtn = document.getElementById('run-btn');
+
+    if (m === 'connected') {
+        banner.className = 'connected';
+        banner.querySelector('.badge').textContent = '⚡ Connected';
+        text.textContent = `Server at ${serverBase} — Claude will stream live`;
+        urlRow.style.display = 'none';
+        runBtn.textContent = 'Run Pipeline';
+    } else if (m === 'standalone') {
+        banner.className = 'standalone';
+        banner.querySelector('.badge').textContent = '✂ Standalone';
+        text.textContent = 'No server found — will generate prompt to copy into Claude.ai';
+        urlRow.style.display = 'flex';
+        runBtn.textContent = 'Generate Prompt';
+    }
+}
+
+async function checkServer(base) {
+    try {
+        const res = await fetch(base + '/health', {
+            method: 'GET', cache: 'no-store',
+            signal: AbortSignal.timeout(2500),
+        });
+        return res.ok;
+    } catch {
+        return false;
+    }
+}
+
+async function initMode() {
+    // 1. Try current origin (works when served by Flask)
+    if (await checkServer(serverBase)) { setMode('connected'); return; }
+    // 2. Try saved custom URL
+    const saved = localStorage.getItem('pipeline_server_url');
+    if (saved) {
+        serverBase = saved;
+        if (await checkServer(serverBase)) { setMode('connected'); return; }
+    }
+    setMode('standalone');
+}
+
+document.getElementById('retry-btn').addEventListener('click', async () => {
+    const val = document.getElementById('server-url-input').value.trim().replace(/\/$/, '');
+    if (!val) return;
+    serverBase = val;
+    localStorage.setItem('pipeline_server_url', val);
+    const ok = await checkServer(serverBase);
+    if (ok) {
+        setMode('connected');
+    } else {
+        document.getElementById('banner-text').textContent = `Can't reach ${val} — check the URL and try again`;
+    }
+});
+
+// -----------------------------------------------------------------------
+// Stage tracking
 // -----------------------------------------------------------------------
 const STAGE_MARKERS = [
     { chip: 'chip-1', pattern: /research complete\./i },
@@ -372,74 +485,69 @@ const STAGE_MARKERS = [
     { chip: 'chip-3', pattern: /final copy ready\./i },
     { chip: 'chip-4', pattern: /session complete\./i },
 ];
-
 let stagesComplete = 0;
+
+function resetStages() {
+    stagesComplete = 0;
+    document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip');
+    document.getElementById('chip-1').className = 'stage-chip active';
+}
 
 function updateStages(text) {
     for (let i = stagesComplete; i < STAGE_MARKERS.length; i++) {
         if (STAGE_MARKERS[i].pattern.test(text)) {
-            // mark all up to i as complete, i+1 as active
-            for (let j = 0; j <= i; j++) {
+            for (let j = 0; j <= i; j++)
                 document.getElementById(STAGE_MARKERS[j].chip).className = 'stage-chip complete';
-            }
-            if (i + 1 < STAGE_MARKERS.length) {
+            if (i + 1 < STAGE_MARKERS.length)
                 document.getElementById(STAGE_MARKERS[i + 1].chip).className = 'stage-chip active';
-            }
             stagesComplete = i + 1;
         }
     }
 }
 
 // -----------------------------------------------------------------------
-// Run pipeline
+// Shared UI helpers
 // -----------------------------------------------------------------------
-let currentReader = null;
-let fullOutput = '';
-
 function setStatus(state, label) {
     const badge = document.getElementById('status-badge');
     badge.className = 'status-badge ' + state;
-    const dot = badge.querySelector('.dot');
-    dot.className = 'dot' + (state === 'running' ? ' pulse' : '');
     badge.innerHTML = `<span class="dot${state === 'running' ? ' pulse' : ''}"></span> ${label}`;
 }
 
-document.getElementById('pipeline-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
+function showOutputCard(streamingMode) {
+    document.getElementById('output-card').style.display = 'block';
+    document.getElementById('output-box').style.display      = streamingMode ? 'block' : 'none';
+    document.getElementById('standalone-box').style.display  = streamingMode ? 'none'  : 'block';
+    document.getElementById('copy-btn').style.display        = streamingMode ? '' : 'none';
+    const sa = document.getElementById('standalone-actions');
+    sa.style.display = streamingMode ? 'none' : 'flex';
+    document.getElementById('output-card').scrollIntoView({ behavior: 'smooth' });
+}
 
-    const online = await checkServer();
-    if (!online) {
-        alert('Pipeline server is not running.\n\nStart it with:\n  python pipeline_server.py');
-        return;
-    }
+let currentReader = null;
+let fullOutput = '';
 
-    const title    = document.getElementById('title').value.trim();
-    const platform = document.getElementById('platform').value;
-    const domain   = document.getElementById('domain').value;
-    const notes    = document.getElementById('notes').value;
-
-    // Reset UI
+// -----------------------------------------------------------------------
+// CONNECTED MODE: stream from server
+// -----------------------------------------------------------------------
+async function runConnected(title, platform, domain, notes) {
     fullOutput = '';
-    stagesComplete = 0;
-    document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip');
-    document.getElementById('chip-1').className = 'stage-chip active';
+    resetStages();
     document.getElementById('output-box').textContent = '';
     document.getElementById('saved-notice').style.display = 'none';
-    document.getElementById('output-card').style.display = 'block';
-    document.getElementById('output-card').scrollIntoView({ behavior: 'smooth' });
+    showOutputCard(true);
 
     setStatus('running', 'Running…');
     document.getElementById('run-btn').disabled = true;
     document.getElementById('stop-btn').style.display = 'inline-block';
 
-    // Cursor
     const outputBox = document.getElementById('output-box');
     const cursor = document.createElement('span');
     cursor.className = 'cursor';
     outputBox.appendChild(cursor);
 
     try {
-        const res = await fetch(SERVER + '/run', {
+        const res = await fetch(serverBase + '/run', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, platform, domain, notes }),
@@ -452,23 +560,18 @@ document.getElementById('pipeline-form').addEventListener('submit', async functi
         while (true) {
             const { value, done } = await currentReader.read();
             if (done) break;
-
             buf += decoder.decode(value, { stream: true });
             const lines = buf.split('\n');
-            buf = lines.pop(); // keep incomplete line
+            buf = lines.pop();
 
             for (const line of lines) {
                 if (!line.startsWith('data: ')) continue;
-                let msg;
-                try { msg = JSON.parse(line.slice(6)); } catch { continue; }
+                let msg; try { msg = JSON.parse(line.slice(6)); } catch { continue; }
 
                 if (msg.type === 'token') {
                     fullOutput += msg.text;
-                    // Insert text before cursor
                     cursor.insertAdjacentText('beforebegin', msg.text);
-                    // Auto-scroll
                     outputBox.scrollTop = outputBox.scrollHeight;
-                    // Check stage markers
                     updateStages(fullOutput);
 
                 } else if (msg.type === 'done') {
@@ -476,13 +579,10 @@ document.getElementById('pipeline-form').addEventListener('submit', async functi
                     setStatus('done', 'Complete');
                     document.getElementById('run-btn').disabled = false;
                     document.getElementById('stop-btn').style.display = 'none';
-                    // Mark all stages complete
                     document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip complete');
-                    // Show saved file
                     const notice = document.getElementById('saved-notice');
                     notice.textContent = `Saved → ${msg.file}`;
                     notice.style.display = 'block';
-                    // Save history
                     saveHistory({ title, platform, domain, notes, date: todayLabel() });
                     renderHistory();
 
@@ -499,14 +599,50 @@ document.getElementById('pipeline-form').addEventListener('submit', async functi
         cursor.remove();
         if (err.name !== 'AbortError') {
             setStatus('error', 'Connection lost');
-            outputBox.textContent += '\n\nConnection lost. Is the server still running?';
+            document.getElementById('output-box').textContent += '\n\nConnection lost — is the server still running?';
+            // Offer to switch to standalone
+            setMode('standalone');
         }
         document.getElementById('run-btn').disabled = false;
         document.getElementById('stop-btn').style.display = 'none';
     }
+}
+
+// -----------------------------------------------------------------------
+// STANDALONE MODE: generate prompt, show for copy
+// -----------------------------------------------------------------------
+function runStandalone(title, platform, domain, notes) {
+    const prompt = buildPrompt(title, platform, domain, notes);
+    fullOutput = prompt;
+    resetStages();
+    document.getElementById('saved-notice').style.display = 'none';
+    showOutputCard(false);
+
+    document.getElementById('standalone-box').value = prompt;
+    setStatus('done', 'Prompt ready');
+    saveHistory({ title, platform, domain, notes, date: todayLabel() });
+    renderHistory();
+}
+
+// -----------------------------------------------------------------------
+// Form submit
+// -----------------------------------------------------------------------
+document.getElementById('pipeline-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const title    = document.getElementById('title').value.trim();
+    const platform = document.getElementById('platform').value;
+    const domain   = document.getElementById('domain').value;
+    const notes    = document.getElementById('notes').value;
+    if (!title) return;
+
+    if (mode === 'connected') {
+        await runConnected(title, platform, domain, notes);
+    } else {
+        runStandalone(title, platform, domain, notes);
+    }
 });
 
-// Stop button
+// Stop
 document.getElementById('stop-btn').addEventListener('click', () => {
     if (currentReader) { currentReader.cancel(); currentReader = null; }
     setStatus('idle', 'Stopped');
@@ -515,14 +651,14 @@ document.getElementById('stop-btn').addEventListener('click', () => {
     document.querySelector('.cursor')?.remove();
 });
 
-// Copy button
+// Copy (streaming output)
 document.getElementById('copy-btn').addEventListener('click', async () => {
     if (!fullOutput) return;
     try {
         await navigator.clipboard.writeText(fullOutput);
-        const badge = document.getElementById('copy-badge');
-        badge.classList.add('show');
-        setTimeout(() => badge.classList.remove('show'), 2000);
+        const b = document.getElementById('copy-badge');
+        b.classList.add('show');
+        setTimeout(() => b.classList.remove('show'), 2000);
     } catch {
         const range = document.createRange();
         range.selectNodeContents(document.getElementById('output-box'));
@@ -531,14 +667,31 @@ document.getElementById('copy-btn').addEventListener('click', async () => {
     }
 });
 
+// Copy standalone prompt
+document.getElementById('copy-standalone-btn').addEventListener('click', async () => {
+    const box = document.getElementById('standalone-box');
+    try {
+        await navigator.clipboard.writeText(box.value);
+        document.getElementById('copy-standalone-btn').textContent = '✓ Copied!';
+        setTimeout(() => { document.getElementById('copy-standalone-btn').textContent = 'Copy Prompt'; }, 2000);
+    } catch {
+        box.select();
+        document.execCommand('copy');
+    }
+});
+
+// Open Claude.ai
+document.getElementById('open-claude-btn').addEventListener('click', () => {
+    window.open('https://claude.ai/new', '_blank');
+});
+
 // -----------------------------------------------------------------------
 // History
 // -----------------------------------------------------------------------
 const HISTORY_KEY = 'pipeline_history';
 function loadHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; } }
 function saveHistory(entry) {
-    const h = loadHistory();
-    h.unshift(entry);
+    const h = loadHistory(); h.unshift(entry);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 20)));
 }
 function todayLabel() {
@@ -564,16 +717,20 @@ function renderHistory() {
     list.querySelectorAll('.btn-sm').forEach(btn => {
         btn.addEventListener('click', () => {
             const e = history[+btn.dataset.idx];
-            document.getElementById('title').value = e.title;
+            document.getElementById('title').value    = e.title;
             document.getElementById('platform').value = e.platform;
-            document.getElementById('domain').value = e.domain;
-            document.getElementById('notes').value = e.notes;
+            document.getElementById('domain').value   = e.domain;
+            document.getElementById('notes').value    = e.notes;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
 }
 
+// -----------------------------------------------------------------------
+// Init
+// -----------------------------------------------------------------------
 renderHistory();
+initMode();
 </script>
 </body>
 </html>
