@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CMS Pipeline">
+    <meta name="theme-color" content="#00d9ff">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <title>Content Pipeline</title>
+    <style>
+        :root {
+            --cyan: #00d9ff;
+            --bg: #2a2a2a;
+            --card: #1e1e1e;
+            --dark: #111;
+            --border: #3a3a3a;
+            --text: #e0e0e0;
+            --muted: #888;
+            --green: #4cdb85;
+            --amber: #ffb400;
+            --red: #ff6b6b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: env(safe-area-inset-top, 16px) 16px env(safe-area-inset-bottom, 24px);
+        }
+
+        /* ---- Header ---- */
+        header {
+            max-width: 860px;
+            margin: 12px auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        h1 { font-size: 19px; font-weight: 500; color: var(--text); }
+        .back-link { font-size: 13px; color: var(--cyan); text-decoration: none; }
+
+        /* ---- Mode banner ---- */
+        #mode-banner {
+            max-width: 860px;
+            margin: 0 auto 14px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            transition: all 0.3s;
+        }
+        #mode-banner.checking  { background: #222; color: #555; border: 1px solid #333; }
+        #mode-banner.server    { background: rgba(76,219,133,0.1); color: var(--green); border: 1px solid var(--green); }
+        #mode-banner.api       { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
+        #mode-banner.standalone{ background: rgba(255,180,0,0.1); color: var(--amber); border: 1px solid var(--amber); }
+
+        .mode-chip {
+            font-size: 11px; font-weight: 700; padding: 2px 9px;
+            border-radius: 10px; background: currentColor; color: #111;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .mode-desc { flex: 1; }
+
+        /* ---- API key setup card ---- */
+        #apikey-card { display: none; }
+
+        .apikey-row { display: flex; gap: 8px; align-items: stretch; }
+        .apikey-row input {
+            flex: 1; background: var(--dark); border: 1.5px solid var(--border);
+            border-radius: 6px; color: var(--text); font-family: inherit;
+            font-size: 14px; padding: 10px 12px; letter-spacing: 0.5px;
+        }
+        .apikey-row input:focus { outline: none; border-color: var(--cyan); }
+        #save-key-btn {
+            padding: 10px 18px; border-radius: 6px; font-size: 13px; font-weight: 700;
+            cursor: pointer; border: none; background: var(--cyan); color: #111;
+            white-space: nowrap;
+        }
+        #save-key-btn:active { opacity: 0.8; }
+
+        .apikey-hint {
+            font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5;
+        }
+        .apikey-hint a { color: var(--cyan); }
+
+        /* ---- Cards ---- */
+        .card {
+            max-width: 860px;
+            margin: 0 auto 16px;
+            background: var(--card);
+            border: 2px solid var(--cyan);
+            border-radius: 12px;
+            padding: 20px 20px;
+            box-shadow: 0 0 18px rgba(0,217,255,0.1);
+        }
+        .card-title {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--cyan); margin-bottom: 18px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 8px;
+        }
+
+        /* ---- Form ---- */
+        .field { margin-bottom: 16px; }
+        label {
+            display: block; font-size: 11px; font-weight: 700; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 6px;
+        }
+        input[type="text"], select, textarea {
+            width: 100%; background: var(--dark); border: 1.5px solid var(--border);
+            border-radius: 8px; color: var(--text); font-family: inherit;
+            font-size: 16px; /* 16px prevents iOS zoom */
+            padding: 12px 14px;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(0,217,255,0.15);
+        }
+        textarea { min-height: 80px; resize: vertical; }
+        select { cursor: pointer; appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center;
+            padding-right: 36px;
+        }
+        select option { background: #1e1e1e; }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 460px) { .row-2 { grid-template-columns: 1fr; } }
+
+        /* ---- Buttons ---- */
+        .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
+        .btn {
+            padding: 13px 22px; border-radius: 8px; font-size: 15px;
+            font-weight: 700; cursor: pointer; border: none;
+            transition: all 0.15s; min-height: 48px; /* mobile touch target */
+        }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn:active:not(:disabled) { transform: scale(0.96); }
+        .btn-primary { background: var(--cyan); color: #111; }
+        .btn-primary:hover:not(:disabled) { background: #00c0e0; }
+        .btn-secondary { background: transparent; color: var(--cyan); border: 2px solid var(--cyan); }
+        .btn-secondary:hover:not(:disabled) { background: rgba(0,217,255,0.08); }
+        .btn-danger { background: transparent; color: var(--red); border: 2px solid var(--red); }
+        .btn-sm {
+            padding: 8px 14px; font-size: 13px; border-radius: 6px; cursor: pointer;
+            border: 1.5px solid var(--cyan); background: transparent; color: var(--cyan);
+            min-height: 36px; font-weight: 600;
+        }
+        .btn-sm:active { opacity: 0.7; }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 600; padding: 6px 14px;
+            border-radius: 20px; margin-left: auto;
+        }
+        .status-badge.idle     { background: #252525; color: #555; border: 1px solid #3a3a3a; }
+        .status-badge.running  { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
+        .status-badge.done     { background: rgba(76,219,133,0.1); color: var(--green); border: 1px solid var(--green); }
+        .status-badge.error    { background: rgba(255,107,107,0.1); color: var(--red); border: 1px solid var(--red); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+        .dot.pulse { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+
+        /* ---- Stage chips ---- */
+        .stages { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+        .stage-chip {
+            padding: 5px 13px; border-radius: 14px; font-size: 12px; font-weight: 600;
+            border: 1.5px solid #333; color: #555; background: #1a1a1a; transition: all 0.3s;
+        }
+        .stage-chip.active   { border-color: var(--cyan);  color: var(--cyan);  background: rgba(0,217,255,0.08); }
+        .stage-chip.complete { border-color: var(--green); color: var(--green); background: rgba(76,219,133,0.08); }
+
+        /* ---- Output ---- */
+        #output-card { display: none; }
+
+        #output-box {
+            background: #0c0c0c; border: 1.5px solid #252525; border-radius: 8px;
+            padding: 16px 18px; font-size: 15px; line-height: 1.8;
+            white-space: pre-wrap; word-break: break-word;
+            max-height: 55vh; overflow-y: auto;
+            color: #ccc; font-family: Georgia, 'Times New Roman', serif;
+        }
+        #output-box::-webkit-scrollbar { width: 4px; }
+        #output-box::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        /* Standalone: textarea so mobile can select-all easily */
+        #standalone-box {
+            width: 100%; background: #0c0c0c; border: 1.5px solid #252525;
+            border-radius: 8px; padding: 16px; font-size: 14px;
+            line-height: 1.75; color: #ccc; font-family: Georgia, serif;
+            min-height: 280px; resize: vertical; display: none;
+        }
+
+        .cursor {
+            display: inline-block; width: 2px; height: 1em;
+            background: var(--cyan); margin-left: 1px; vertical-align: text-bottom;
+            animation: blink 0.85s step-end infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+        #saved-notice { display:none; margin-top:10px; font-size:12px; color:var(--green); }
+
+        .copy-feedback {
+            font-size: 12px; font-weight: 700; color: var(--cyan);
+            opacity: 0; transition: opacity 0.3s; margin-left: 6px;
+        }
+        .copy-feedback.show { opacity: 1; }
+
+        /* ---- History ---- */
+        #history-card { display: none; }
+        .history-list { list-style: none; }
+        .history-list li {
+            padding: 10px 8px; border-bottom: 1px solid #252525;
+            display: flex; align-items: center; gap: 10px; font-size: 13px;
+        }
+        .history-list li:last-child { border-bottom: none; }
+        .history-meta { color: #555; font-size: 11px; min-width: 100px; text-align: right; flex-shrink: 0; }
+        .history-title { flex: 1; line-height: 1.3; }
+
+        /* ---- Key management row ---- */
+        #key-mgmt { font-size: 12px; color: var(--muted); margin-top: 10px; }
+        #key-mgmt button {
+            background: none; border: none; color: var(--red);
+            font-size: 12px; cursor: pointer; text-decoration: underline; padding: 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>✍️ Content Pipeline</h1>
+    <a class="back-link" href="index.html">← Home</a>
+</header>
+
+<!-- MODE BANNER -->
+<div id="mode-banner" class="checking">
+    <span class="mode-chip">⋯</span>
+    <span class="mode-desc" id="banner-text">Detecting mode…</span>
+</div>
+
+<!-- API KEY SETUP -->
+<div class="card" id="apikey-card">
+    <div class="card-title">API Key Setup (one-time)</div>
+    <div class="apikey-row">
+        <input type="password" id="apikey-input" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+        <button id="save-key-btn">Save</button>
+    </div>
+    <p class="apikey-hint">
+        Your key is stored only on this device (localStorage). Never shared.<br>
+        Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>
+    </p>
+</div>
+
+<!-- INPUT FORM -->
+<div class="card">
+    <div class="card-title">Content Item</div>
+    <form id="pipeline-form">
+        <div class="field">
+            <label for="title">Title / Idea</label>
+            <input type="text" id="title" placeholder="Paste from Notion content calendar…" required autocomplete="off">
+        </div>
+        <div class="row-2">
+            <div class="field">
+                <label for="platform">Platform</label>
+                <select id="platform">
+                    <option>LinkedIn</option>
+                    <option>Substack</option>
+                    <option>X</option>
+                    <option>YouTube</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="domain">Domain</label>
+                <select id="domain">
+                    <option>Irving Insights</option>
+                    <option>Book</option>
+                    <option>TBK</option>
+                    <option>SubSignal</option>
+                    <option>Personal</option>
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" placeholder="Paste any notes from Notion, or leave blank…"></textarea>
+        </div>
+        <div class="btn-row">
+            <button type="submit" class="btn btn-primary" id="run-btn">Run Pipeline</button>
+            <button type="button" class="btn btn-danger" id="stop-btn" style="display:none">Stop</button>
+            <span class="status-badge idle" id="status-badge">
+                <span class="dot"></span> Ready
+            </span>
+        </div>
+        <div id="key-mgmt" style="display:none">
+            API key saved. <button id="change-key-btn">Change key</button>
+        </div>
+    </form>
+</div>
+
+<!-- OUTPUT -->
+<div class="card" id="output-card">
+    <div class="card-title">
+        <span>Output</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-sm" id="copy-btn" style="display:none">
+                Copy <span class="copy-feedback" id="copy-fb">✓</span>
+            </button>
+            <button class="btn-sm" id="copy-standalone-btn" style="display:none">
+                Copy Prompt <span class="copy-feedback" id="copy-standalone-fb">✓</span>
+            </button>
+            <button class="btn-sm" id="open-claude-btn" style="display:none">Claude.ai ↗</button>
+        </div>
+    </div>
+
+    <div class="stages">
+        <div class="stage-chip" id="chip-1">① Research</div>
+        <div class="stage-chip" id="chip-2">② Draft</div>
+        <div class="stage-chip" id="chip-3">③ Editorial</div>
+        <div class="stage-chip" id="chip-4">④ Posting</div>
+    </div>
+
+    <div id="output-box"></div>
+    <textarea id="standalone-box" readonly></textarea>
+    <div id="saved-notice"></div>
+</div>
+
+<!-- HISTORY -->
+<div class="card" id="history-card">
+    <div class="card-title">Recent Runs</div>
+    <ul class="history-list" id="history-list"></ul>
+</div>
+
+<script>
+// -----------------------------------------------------------------------
+// Constants
+// -----------------------------------------------------------------------
+const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+const MODEL = 'claude-opus-4-6';
+
+const SYSTEM_PROMPT = `You are Daniel Irving's CMS Overseer for a single content pipeline run. Your job is to take one content item from idea to post-ready in this session — research it, draft it, edit it, and hand off a clean posting instruction at the end.
+
+Do not ask for clarification unless something is genuinely ambiguous. Make reasonable decisions and flag them. Move through all stages sequentially and show your work at each stage before proceeding.`;
+
+function buildPrompt(title, platform, domain, notes) {
+    const n = notes.trim() || 'none';
+    return `CONTENT ITEM:
+- Title/Idea: ${title}
+- Platform: ${platform}
+- Domain: ${domain}
+- Notes: ${n}
+
+---
+
+DANIEL'S IDENTITY (do not ask — this is fixed context):
+- Principal Consultant, Irving Insights Consulting — operational strategy and values-based planning for mission-driven nonprofits
+- Author-in-progress: "A Human Childhood in the Era of AI" — experiential education, formation theory, AI's impact on childhood
+- 30+ years in camp-based experiential education, 12 as Camp Sisol director
+- Authorial stance: witness/practitioner — not pundit, not policy advocate
+- Voice models: Scott Galloway (direct, provokes thought) meets bell hooks (grounded, relational, honest)
+- Philosophy: skeptical of tech solutionism; believes human formation > digital optimization
+- Avoid: buzzwords, listicles, "In today's world", "As we navigate", corporate hedging, AI-sounding prose
+
+---
+
+## STAGE 1 — RESEARCH
+
+Research the topic above. Produce a Research Brief with:
+
+1. Key Findings — 3–5 bullets of what's true, current, and relevant
+2. Best Angles for Daniel — 3 numbered angles ranked by fit with his voice and authority
+3. Anchor — the single best story, example, or statistic to build the piece around
+4. Sources — any links worth citing or saving
+5. Recommended Angle — which of the 3 you'll use and why (1 sentence)
+
+Output the Research Brief in full. Then pause and say: "Research complete. Proceeding to draft."
+
+---
+
+## STAGE 2 — DRAFT
+
+Using the Research Brief above and the recommended angle, write a complete first draft.
+
+Platform specs (apply the one that matches):
+- **LinkedIn post**: 150–300 words. No headers. Paragraph breaks every 2–3 lines. End with a single question or point of reflection. No hashtags yet.
+- **Substack article**: 600–1,200 words. Open with a personal scene or observation. 3 sections. Practical or reflective close.
+- **X thread**: 6–9 tweets. Hook tweet under 200 chars. Each tweet standalone but builds toward a conclusion. Number them (1/, 2/, etc.).
+- **YouTube script**: 800–1,500 words. Conversational register. Open with a question or scene. Two natural pause points marked [PAUSE].
+
+Write the full draft. Do not truncate. Then pause and say: "Draft complete. Proceeding to editorial pass."
+
+---
+
+## STAGE 3 — EDITORIAL PASS
+
+Review the draft against this checklist. Fix problems directly — don't just flag them:
+
+1. **Hook** — does the first sentence earn the second? Rewrite if not.
+2. **Voice** — does it sound like a human practitioner? Cut or rewrite any AI-sounding phrases.
+3. **Specificity** — is there at least one concrete detail, story, or number? Add one if missing.
+4. **Length** — is every sentence earning its place? Cut anything that doesn't.
+5. **Ending** — does it land with a point of view? Fix if it trails off.
+6. **Platform fit** — does the format and length match the platform? Adjust if not.
+
+Output the final polished version in full. Below it, write a 2-sentence editorial note: what you changed and why.
+
+Then suggest up to 3 hashtags if platform is LinkedIn or X. Skip for Substack and YouTube.
+
+Then pause and say: "Final copy ready. Proceeding to posting instructions."
+
+---
+
+## STAGE 4 — POSTING INSTRUCTIONS
+
+Output a clean, ready-to-execute posting block:
+
+---
+POSTING INSTRUCTIONS
+Platform: ${platform}
+Action: Navigate to the URL below, open the composer, paste the final copy exactly as written. Do not alter it.
+
+Platform URLs:
+- LinkedIn: https://www.linkedin.com/feed/ → click "Start a post"
+- Substack: https://substack.com/publish/post/new
+- X / Twitter: https://x.com/compose/tweet
+- YouTube: https://studio.youtube.com/
+
+Hashtags to append (LinkedIn/X only): [list or "none"]
+Visibility: Public
+
+After posting:
+1. Copy the URL of the published post
+2. Return here with the Post URL
+3. Log it in the Notion Content Calendar entry: ${title} → Status: Published, Post URL: [paste]
+---
+
+Session complete.`;
+}
+
+// -----------------------------------------------------------------------
+// Mode management: 'checking' | 'server' | 'api' | 'standalone'
+// -----------------------------------------------------------------------
+let mode = 'checking';
+let serverBase = window.location.origin;
+
+function setBanner(m, text) {
+    const banner = document.getElementById('mode-banner');
+    const chip   = banner.querySelector('.mode-chip');
+    const desc   = document.getElementById('banner-text');
+    banner.className = m;
+    const labels = { checking: '⋯', server: '⚡ Server', api: '🔑 API', standalone: '✂ Offline' };
+    chip.textContent = labels[m] || m;
+    desc.textContent = text;
+}
+
+async function checkServer(base) {
+    try {
+        const res = await fetch(base + '/health', {
+            method: 'GET', cache: 'no-store',
+            signal: AbortSignal.timeout(2000),
+        });
+        return res.ok;
+    } catch { return false; }
+}
+
+function getSavedKey() { return localStorage.getItem('anthropic_api_key') || ''; }
+function hasSavedKey()  { return !!getSavedKey(); }
+
+async function initMode() {
+    // 1. Try Flask server (same origin or saved LAN URL)
+    const lanUrl = localStorage.getItem('pipeline_server_url');
+    if (lanUrl) serverBase = lanUrl;
+    if (await checkServer(serverBase)) {
+        mode = 'server';
+        setBanner('server', 'Flask server connected — output streams live');
+        document.getElementById('run-btn').textContent = 'Run Pipeline';
+        document.getElementById('key-mgmt').style.display = 'none';
+        return;
+    }
+
+    // 2. Saved API key → direct mode
+    if (hasSavedKey()) {
+        mode = 'api';
+        setBanner('api', 'Running directly via Anthropic API — no server needed');
+        document.getElementById('run-btn').textContent = 'Run Pipeline';
+        document.getElementById('key-mgmt').style.display = 'block';
+        return;
+    }
+
+    // 3. No server, no key → ask for key
+    mode = 'standalone';
+    setBanner('standalone', 'Enter your Anthropic API key below to run on-device');
+    document.getElementById('run-btn').textContent = 'Generate Prompt';
+    document.getElementById('apikey-card').style.display = 'block';
+}
+
+// Save API key
+document.getElementById('save-key-btn').addEventListener('click', () => {
+    const key = document.getElementById('apikey-input').value.trim();
+    if (!key.startsWith('sk-ant')) {
+        alert('That doesn\'t look like an Anthropic API key (should start with sk-ant-)');
+        return;
+    }
+    localStorage.setItem('anthropic_api_key', key);
+    document.getElementById('apikey-card').style.display = 'none';
+    mode = 'api';
+    setBanner('api', 'API key saved — running directly via Anthropic API');
+    document.getElementById('run-btn').textContent = 'Run Pipeline';
+    document.getElementById('key-mgmt').style.display = 'block';
+});
+
+document.getElementById('change-key-btn').addEventListener('click', () => {
+    localStorage.removeItem('anthropic_api_key');
+    document.getElementById('apikey-input').value = '';
+    document.getElementById('apikey-card').style.display = 'block';
+    document.getElementById('key-mgmt').style.display = 'none';
+    mode = 'standalone';
+    setBanner('standalone', 'Enter a new API key below');
+});
+
+// -----------------------------------------------------------------------
+// Stage tracking
+// -----------------------------------------------------------------------
+const STAGE_MARKERS = [
+    { chip: 'chip-1', re: /research complete\./i },
+    { chip: 'chip-2', re: /draft complete\./i },
+    { chip: 'chip-3', re: /final copy ready\./i },
+    { chip: 'chip-4', re: /session complete\./i },
+];
+let stagesComplete = 0;
+
+function resetStages() {
+    stagesComplete = 0;
+    document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip');
+    document.getElementById('chip-1').className = 'stage-chip active';
+}
+
+function updateStages(text) {
+    for (let i = stagesComplete; i < STAGE_MARKERS.length; i++) {
+        if (STAGE_MARKERS[i].re.test(text)) {
+            for (let j = 0; j <= i; j++)
+                document.getElementById(STAGE_MARKERS[j].chip).className = 'stage-chip complete';
+            if (i + 1 < STAGE_MARKERS.length)
+                document.getElementById(STAGE_MARKERS[i + 1].chip).className = 'stage-chip active';
+            stagesComplete = i + 1;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------
+// UI helpers
+// -----------------------------------------------------------------------
+function setStatus(state, label) {
+    const b = document.getElementById('status-badge');
+    b.className = 'status-badge ' + state;
+    b.innerHTML = `<span class="dot${state === 'running' ? ' pulse' : ''}"></span> ${label}`;
+}
+
+function showOutput(streaming) {
+    document.getElementById('output-card').style.display = 'block';
+    document.getElementById('output-box').style.display         = streaming ? 'block' : 'none';
+    document.getElementById('standalone-box').style.display     = streaming ? 'none'  : 'block';
+    document.getElementById('copy-btn').style.display           = streaming ? ''      : 'none';
+    document.getElementById('copy-standalone-btn').style.display= streaming ? 'none'  : '';
+    document.getElementById('open-claude-btn').style.display    = streaming ? 'none'  : '';
+    document.getElementById('output-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+let currentReader = null;
+let fullOutput = '';
+
+// -----------------------------------------------------------------------
+// SERVER MODE: SSE from Flask
+// -----------------------------------------------------------------------
+async function runServer(title, platform, domain, notes) {
+    fullOutput = '';
+    resetStages();
+    document.getElementById('output-box').textContent = '';
+    document.getElementById('saved-notice').style.display = 'none';
+    showOutput(true);
+    setStatus('running', 'Running…');
+    document.getElementById('run-btn').disabled = true;
+    document.getElementById('stop-btn').style.display = 'inline-block';
+
+    const box = document.getElementById('output-box');
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    box.appendChild(cursor);
+
+    try {
+        const res = await fetch(serverBase + '/run', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, platform, domain, notes }),
+        });
+        currentReader = res.body.getReader();
+        const dec = new TextDecoder();
+        let buf = '';
+        while (true) {
+            const { value, done } = await currentReader.read();
+            if (done) break;
+            buf += dec.decode(value, { stream: true });
+            const lines = buf.split('\n'); buf = lines.pop();
+            for (const line of lines) {
+                if (!line.startsWith('data: ')) continue;
+                let msg; try { msg = JSON.parse(line.slice(6)); } catch { continue; }
+                if (msg.type === 'token') {
+                    fullOutput += msg.text;
+                    cursor.insertAdjacentText('beforebegin', msg.text);
+                    box.scrollTop = box.scrollHeight;
+                    updateStages(fullOutput);
+                } else if (msg.type === 'done') {
+                    finishRun(cursor, msg.file);
+                } else if (msg.type === 'error') {
+                    cursor.remove();
+                    setStatus('error', 'Error');
+                    box.textContent += '\n\n⚠ ' + msg.message;
+                    resetRunBtn();
+                }
+            }
+        }
+    } catch (err) {
+        cursor.remove();
+        if (err.name !== 'AbortError') {
+            setStatus('error', 'Lost connection');
+            box.textContent += '\n\nServer connection lost.';
+        }
+        resetRunBtn();
+    }
+}
+
+// -----------------------------------------------------------------------
+// API MODE: direct Anthropic streaming from browser
+// -----------------------------------------------------------------------
+async function runApi(title, platform, domain, notes) {
+    const apiKey = getSavedKey();
+    fullOutput = '';
+    resetStages();
+    document.getElementById('output-box').textContent = '';
+    document.getElementById('saved-notice').style.display = 'none';
+    showOutput(true);
+    setStatus('running', 'Running…');
+    document.getElementById('run-btn').disabled = true;
+    document.getElementById('stop-btn').style.display = 'inline-block';
+
+    const box = document.getElementById('output-box');
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    box.appendChild(cursor);
+
+    let aborted = false;
+    const controller = new AbortController();
+    currentReader = { cancel: () => { aborted = true; controller.abort(); } };
+
+    try {
+        const res = await fetch(ANTHROPIC_API, {
+            method: 'POST',
+            signal: controller.signal,
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true',
+            },
+            body: JSON.stringify({
+                model: MODEL,
+                max_tokens: 8096,
+                stream: true,
+                system: SYSTEM_PROMPT,
+                messages: [{ role: 'user', content: buildPrompt(title, platform, domain, notes) }],
+            }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: { message: res.statusText } }));
+            throw new Error(err.error?.message || `HTTP ${res.status}`);
+        }
+
+        const reader = res.body.getReader();
+        const dec = new TextDecoder();
+        let buf = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buf += dec.decode(value, { stream: true });
+            const lines = buf.split('\n'); buf = lines.pop();
+            for (const line of lines) {
+                if (!line.startsWith('data: ')) continue;
+                const raw = line.slice(6).trim();
+                if (raw === '[DONE]') continue;
+                let evt; try { evt = JSON.parse(raw); } catch { continue; }
+
+                if (evt.type === 'content_block_delta') {
+                    const d = evt.delta;
+                    if (d.type === 'text_delta') {
+                        fullOutput += d.text;
+                        cursor.insertAdjacentText('beforebegin', d.text);
+                        box.scrollTop = box.scrollHeight;
+                        updateStages(fullOutput);
+                    }
+                    // skip thinking_delta silently
+                } else if (evt.type === 'message_stop') {
+                    finishRun(cursor, null);
+                }
+            }
+        }
+    } catch (err) {
+        cursor.remove();
+        if (!aborted) {
+            setStatus('error', 'Error');
+            box.textContent += '\n\n⚠ ' + err.message;
+            // If auth error, prompt to re-enter key
+            if (err.message.includes('401') || err.message.includes('authentication')) {
+                document.getElementById('apikey-card').style.display = 'block';
+            }
+        } else {
+            setStatus('idle', 'Stopped');
+        }
+        resetRunBtn();
+    }
+}
+
+// -----------------------------------------------------------------------
+// STANDALONE MODE: generate prompt for clipboard
+// -----------------------------------------------------------------------
+function runStandalone(title, platform, domain, notes) {
+    const prompt = buildPrompt(title, platform, domain, notes);
+    fullOutput = prompt;
+    resetStages();
+    document.getElementById('saved-notice').style.display = 'none';
+    showOutput(false);
+    document.getElementById('standalone-box').value = prompt;
+    setStatus('done', 'Prompt ready — copy and paste into Claude.ai');
+    saveHistory({ title, platform, domain, notes, date: todayLabel() });
+    renderHistory();
+}
+
+function finishRun(cursor, file) {
+    cursor.remove();
+    setStatus('done', 'Complete');
+    document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip complete');
+    resetRunBtn();
+    if (file) {
+        const n = document.getElementById('saved-notice');
+        n.textContent = `Saved → ${file}`;
+        n.style.display = 'block';
+    }
+}
+
+function resetRunBtn() {
+    document.getElementById('run-btn').disabled = false;
+    document.getElementById('stop-btn').style.display = 'none';
+    currentReader = null;
+}
+
+// -----------------------------------------------------------------------
+// Form submit
+// -----------------------------------------------------------------------
+document.getElementById('pipeline-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const title    = document.getElementById('title').value.trim();
+    const platform = document.getElementById('platform').value;
+    const domain   = document.getElementById('domain').value;
+    const notes    = document.getElementById('notes').value;
+    if (!title) return;
+
+    if (mode === 'server') {
+        await runServer(title, platform, domain, notes);
+    } else if (mode === 'api') {
+        await runApi(title, platform, domain, notes);
+        saveHistory({ title, platform, domain, notes, date: todayLabel() });
+        renderHistory();
+    } else {
+        runStandalone(title, platform, domain, notes);
+    }
+});
+
+// Stop
+document.getElementById('stop-btn').addEventListener('click', () => {
+    currentReader?.cancel();
+    currentReader = null;
+    document.querySelector('.cursor')?.remove();
+    setStatus('idle', 'Stopped');
+    resetRunBtn();
+});
+
+// Copy (streaming)
+document.getElementById('copy-btn').addEventListener('click', async () => {
+    if (!fullOutput) return;
+    await copyText(fullOutput, 'copy-fb');
+});
+
+// Copy (standalone)
+document.getElementById('copy-standalone-btn').addEventListener('click', async () => {
+    const val = document.getElementById('standalone-box').value;
+    if (!val) return;
+    await copyText(val, 'copy-standalone-fb');
+});
+
+document.getElementById('open-claude-btn').addEventListener('click', () => {
+    window.open('https://claude.ai/new', '_blank');
+});
+
+async function copyText(text, feedbackId) {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        // Android fallback: select the textarea
+        const box = document.getElementById('standalone-box');
+        if (box) { box.select(); document.execCommand('copy'); }
+    }
+    const fb = document.getElementById(feedbackId);
+    fb.classList.add('show');
+    setTimeout(() => fb.classList.remove('show'), 2000);
+}
+
+// -----------------------------------------------------------------------
+// History
+// -----------------------------------------------------------------------
+const HISTORY_KEY = 'pipeline_history';
+function loadHistory()    { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; } }
+function saveHistory(e)   { const h = loadHistory(); h.unshift(e); localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 20))); }
+function todayLabel()     { return new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }); }
+function escHtml(s)       { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderHistory() {
+    const history = loadHistory();
+    const card = document.getElementById('history-card');
+    const list = document.getElementById('history-list');
+    if (!history.length) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    list.innerHTML = '';
+    history.forEach((e, i) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span class="history-title">${escHtml(e.title)}</span>
+            <span class="history-meta">${escHtml(e.platform)} · ${escHtml(e.date)}</span>
+            <button class="btn-sm" data-i="${i}">Load</button>`;
+        list.appendChild(li);
+    });
+    list.querySelectorAll('.btn-sm').forEach(b => {
+        b.addEventListener('click', () => {
+            const e = history[+b.dataset.i];
+            document.getElementById('title').value    = e.title;
+            document.getElementById('platform').value = e.platform;
+            document.getElementById('domain').value   = e.domain;
+            document.getElementById('notes').value    = e.notes;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+}
+
+// -----------------------------------------------------------------------
+// PWA service worker
+// -----------------------------------------------------------------------
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+
+// -----------------------------------------------------------------------
+// Init
+// -----------------------------------------------------------------------
+renderHistory();
+initMode();
+</script>
+</body>
+</html>
