@@ -35,6 +35,7 @@ try:
         SYSTEM_MODEL,
         SYSTEM_PROMPT,
         ensure_output_dir,
+        save_to_notion,
         slugify,
     )
 except ImportError:
@@ -130,9 +131,9 @@ def run():
         # Save output
         output_text = "".join(full_output)
         output_dir = ensure_output_dir()
-        date_str = datetime.now().strftime("%Y-%m-%d")
+        ts = datetime.now().strftime("%Y-%m-%d_%H-%M")
         slug = slugify(title)
-        filename = f"{date_str}_{slug}.md"
+        filename = f"{ts}_{slug}.md"
         filepath = output_dir / filename
         header = (
             f"# {title}\n\n"
@@ -144,7 +145,19 @@ def run():
         )
         filepath.write_text(header + output_text, encoding="utf-8")
 
-        yield _sse({"type": "done", "file": str(filepath.relative_to(BASE_DIR))})
+        notion_url = None
+        notion_token = os.environ.get("NOTION_API_TOKEN")
+        if notion_token:
+            try:
+                notion_url = save_to_notion(
+                    {"title": title, "platform": platform, "domain": domain, "notes": notes},
+                    output_text,
+                    notion_token,
+                )
+            except Exception:
+                pass  # non-fatal; browser can fall back to its own token
+
+        yield _sse({"type": "done", "file": str(filepath.relative_to(BASE_DIR)), "notion_url": notion_url})
 
     return Response(generate(), mimetype="text/event-stream",
                     headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"})

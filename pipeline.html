@@ -23,6 +23,7 @@
             --green: #4cdb85;
             --amber: #ffb400;
             --red: #ff6b6b;
+            --purple: #b088f9;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -34,7 +35,6 @@
             padding: env(safe-area-inset-top, 16px) 16px env(safe-area-inset-bottom, 24px);
         }
 
-        /* ---- Header ---- */
         header {
             max-width: 860px;
             margin: 12px auto 20px;
@@ -46,7 +46,6 @@
         h1 { font-size: 19px; font-weight: 500; color: var(--text); }
         .back-link { font-size: 13px; color: var(--cyan); text-decoration: none; }
 
-        /* ---- Mode banner ---- */
         #mode-banner {
             max-width: 860px;
             margin: 0 auto 14px;
@@ -63,44 +62,57 @@
         #mode-banner.server    { background: rgba(76,219,133,0.1); color: var(--green); border: 1px solid var(--green); }
         #mode-banner.api       { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
         #mode-banner.standalone{ background: rgba(255,180,0,0.1); color: var(--amber); border: 1px solid var(--amber); }
-
         .mode-chip {
             font-size: 11px; font-weight: 700; padding: 2px 9px;
             border-radius: 10px; background: currentColor; color: #111;
             white-space: nowrap; flex-shrink: 0;
         }
-        .mode-desc { flex: 1; }
 
-        /* ---- API key setup card ---- */
-        #apikey-card { display: none; }
-
-        .apikey-row { display: flex; gap: 8px; align-items: stretch; }
-        .apikey-row input {
-            flex: 1; background: var(--dark); border: 1.5px solid var(--border);
-            border-radius: 6px; color: var(--text); font-family: inherit;
-            font-size: 14px; padding: 10px 12px; letter-spacing: 0.5px;
+        /* ---- Setup cards (API key + Notion token) ---- */
+        .setup-card {
+            max-width: 860px;
+            margin: 0 auto 14px;
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
         }
-        .apikey-row input:focus { outline: none; border-color: var(--cyan); }
-        #save-key-btn {
+        .setup-card-title {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--muted); margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .setup-card-title span { color: var(--cyan); }
+        .setup-row { display: flex; gap: 8px; align-items: stretch; }
+        .setup-row input {
+            flex: 1; background: var(--dark); border: 1.5px solid var(--border);
+            border-radius: 6px; color: var(--text); font-family: monospace;
+            font-size: 14px; padding: 10px 12px;
+        }
+        .setup-row input:focus { outline: none; border-color: var(--cyan); }
+        .setup-save-btn {
             padding: 10px 18px; border-radius: 6px; font-size: 13px; font-weight: 700;
             cursor: pointer; border: none; background: var(--cyan); color: #111;
             white-space: nowrap;
         }
-        #save-key-btn:active { opacity: 0.8; }
-
-        .apikey-hint {
-            font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5;
+        .setup-save-btn:active { opacity: 0.8; }
+        .setup-hint {
+            font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.55;
         }
-        .apikey-hint a { color: var(--cyan); }
+        .setup-hint a { color: var(--cyan); }
+        .skip-link {
+            background: none; border: none; color: var(--muted); font-size: 12px;
+            cursor: pointer; text-decoration: underline; padding: 0; margin-top: 6px; display: block;
+        }
 
-        /* ---- Cards ---- */
+        /* ---- Main cards ---- */
         .card {
             max-width: 860px;
             margin: 0 auto 16px;
             background: var(--card);
             border: 2px solid var(--cyan);
             border-radius: 12px;
-            padding: 20px 20px;
+            padding: 20px;
             box-shadow: 0 0 18px rgba(0,217,255,0.1);
         }
         .card-title {
@@ -119,8 +131,7 @@
         input[type="text"], select, textarea {
             width: 100%; background: var(--dark); border: 1.5px solid var(--border);
             border-radius: 8px; color: var(--text); font-family: inherit;
-            font-size: 16px; /* 16px prevents iOS zoom */
-            padding: 12px 14px;
+            font-size: 16px; padding: 12px 14px;
             transition: border-color 0.2s;
         }
         input[type="text"]:focus, select:focus, textarea:focus {
@@ -128,10 +139,10 @@
             box-shadow: 0 0 0 3px rgba(0,217,255,0.15);
         }
         textarea { min-height: 80px; resize: vertical; }
-        select { cursor: pointer; appearance: none; -webkit-appearance: none;
+        select {
+            cursor: pointer; appearance: none; -webkit-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 14px center;
-            padding-right: 36px;
+            background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
         }
         select option { background: #1e1e1e; }
         .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -142,15 +153,14 @@
         .btn {
             padding: 13px 22px; border-radius: 8px; font-size: 15px;
             font-weight: 700; cursor: pointer; border: none;
-            transition: all 0.15s; min-height: 48px; /* mobile touch target */
+            transition: all 0.15s; min-height: 48px;
         }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn:active:not(:disabled) { transform: scale(0.96); }
-        .btn-primary { background: var(--cyan); color: #111; }
+        .btn-primary   { background: var(--cyan); color: #111; }
         .btn-primary:hover:not(:disabled) { background: #00c0e0; }
         .btn-secondary { background: transparent; color: var(--cyan); border: 2px solid var(--cyan); }
-        .btn-secondary:hover:not(:disabled) { background: rgba(0,217,255,0.08); }
-        .btn-danger { background: transparent; color: var(--red); border: 2px solid var(--red); }
+        .btn-danger    { background: transparent; color: var(--red); border: 2px solid var(--red); }
         .btn-sm {
             padding: 8px 14px; font-size: 13px; border-radius: 6px; cursor: pointer;
             border: 1.5px solid var(--cyan); background: transparent; color: var(--cyan);
@@ -158,15 +168,30 @@
         }
         .btn-sm:active { opacity: 0.7; }
 
+        /* ---- Credentials management row ---- */
+        .creds-row {
+            margin-top: 10px; font-size: 12px; color: var(--muted);
+            display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+        }
+        .creds-row button {
+            background: none; border: none; font-size: 12px; cursor: pointer;
+            text-decoration: underline; padding: 0;
+        }
+        .creds-item { display: flex; align-items: center; gap: 5px; }
+        .creds-dot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .creds-dot.ok   { background: var(--green); }
+        .creds-dot.warn { background: var(--amber); }
+
+        /* ---- Status badge ---- */
         .status-badge {
             display: inline-flex; align-items: center; gap: 6px;
             font-size: 12px; font-weight: 600; padding: 6px 14px;
             border-radius: 20px; margin-left: auto;
         }
-        .status-badge.idle     { background: #252525; color: #555; border: 1px solid #3a3a3a; }
-        .status-badge.running  { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
-        .status-badge.done     { background: rgba(76,219,133,0.1); color: var(--green); border: 1px solid var(--green); }
-        .status-badge.error    { background: rgba(255,107,107,0.1); color: var(--red); border: 1px solid var(--red); }
+        .status-badge.idle    { background: #252525; color: #555; border: 1px solid #3a3a3a; }
+        .status-badge.running { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
+        .status-badge.done    { background: rgba(76,219,133,0.1); color: var(--green); border: 1px solid var(--green); }
+        .status-badge.error   { background: rgba(255,107,107,0.1); color: var(--red); border: 1px solid var(--red); }
         .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
         .dot.pulse { animation: pulse 1s infinite; }
         @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
@@ -182,7 +207,6 @@
 
         /* ---- Output ---- */
         #output-card { display: none; }
-
         #output-box {
             background: #0c0c0c; border: 1.5px solid #252525; border-radius: 8px;
             padding: 16px 18px; font-size: 15px; line-height: 1.8;
@@ -192,15 +216,12 @@
         }
         #output-box::-webkit-scrollbar { width: 4px; }
         #output-box::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-
-        /* Standalone: textarea so mobile can select-all easily */
         #standalone-box {
             width: 100%; background: #0c0c0c; border: 1.5px solid #252525;
             border-radius: 8px; padding: 16px; font-size: 14px;
             line-height: 1.75; color: #ccc; font-family: Georgia, serif;
             min-height: 280px; resize: vertical; display: none;
         }
-
         .cursor {
             display: inline-block; width: 2px; height: 1em;
             background: var(--cyan); margin-left: 1px; vertical-align: text-bottom;
@@ -208,12 +229,14 @@
         }
         @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
 
-        #saved-notice { display:none; margin-top:10px; font-size:12px; color:var(--green); }
-
-        .copy-feedback {
-            font-size: 12px; font-weight: 700; color: var(--cyan);
-            opacity: 0; transition: opacity 0.3s; margin-left: 6px;
+        /* ---- Save notice ---- */
+        #saved-notice {
+            display: none; margin-top: 12px; font-size: 13px; color: var(--green);
+            line-height: 1.5;
         }
+        #saved-notice a { color: var(--cyan); }
+
+        .copy-feedback { font-size: 12px; font-weight: 700; color: var(--cyan); opacity: 0; transition: opacity 0.3s; margin-left: 4px; }
         .copy-feedback.show { opacity: 1; }
 
         /* ---- History ---- */
@@ -224,15 +247,8 @@
             display: flex; align-items: center; gap: 10px; font-size: 13px;
         }
         .history-list li:last-child { border-bottom: none; }
-        .history-meta { color: #555; font-size: 11px; min-width: 100px; text-align: right; flex-shrink: 0; }
+        .history-meta { color: #555; font-size: 11px; min-width: 90px; text-align: right; flex-shrink: 0; }
         .history-title { flex: 1; line-height: 1.3; }
-
-        /* ---- Key management row ---- */
-        #key-mgmt { font-size: 12px; color: var(--muted); margin-top: 10px; }
-        #key-mgmt button {
-            background: none; border: none; color: var(--red);
-            font-size: 12px; cursor: pointer; text-decoration: underline; padding: 0;
-        }
     </style>
 </head>
 <body>
@@ -245,19 +261,35 @@
 <!-- MODE BANNER -->
 <div id="mode-banner" class="checking">
     <span class="mode-chip">⋯</span>
-    <span class="mode-desc" id="banner-text">Detecting mode…</span>
+    <span id="banner-text">Detecting mode…</span>
 </div>
 
-<!-- API KEY SETUP -->
-<div class="card" id="apikey-card">
-    <div class="card-title">API Key Setup (one-time)</div>
-    <div class="apikey-row">
+<!-- ANTHROPIC API KEY SETUP -->
+<div class="setup-card" id="apikey-card" style="display:none">
+    <div class="setup-card-title">Anthropic API Key <span>(one-time)</span></div>
+    <div class="setup-row">
         <input type="password" id="apikey-input" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-        <button id="save-key-btn">Save</button>
+        <button class="setup-save-btn" id="save-key-btn">Save</button>
     </div>
-    <p class="apikey-hint">
-        Your key is stored only on this device (localStorage). Never shared.<br>
-        Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>
+    <p class="setup-hint">
+        Stored only on this device (localStorage). Get a key at
+        <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>
+    </p>
+</div>
+
+<!-- NOTION TOKEN SETUP -->
+<div class="setup-card" id="notion-card" style="display:none">
+    <div class="setup-card-title">Notion Integration Token <span>(optional)</span></div>
+    <div class="setup-row">
+        <input type="password" id="notion-input" placeholder="secret_…" autocomplete="off" spellcheck="false">
+        <button class="setup-save-btn" id="save-notion-btn">Save</button>
+    </div>
+    <p class="setup-hint">
+        Auto-saves output to <em>SignalWorks — Content Items</em> and posts a completion comment.<br>
+        Create an internal integration at
+        <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a>,
+        then share the database with it.
+        <button class="skip-link" id="skip-notion-btn">Skip for now</button>
     </p>
 </div>
 
@@ -301,8 +333,17 @@
                 <span class="dot"></span> Ready
             </span>
         </div>
-        <div id="key-mgmt" style="display:none">
-            API key saved. <button id="change-key-btn">Change key</button>
+        <div class="creds-row" id="creds-row" style="display:none">
+            <span class="creds-item" id="cred-anthropic" style="display:none">
+                <span class="creds-dot ok"></span>
+                <span>Anthropic</span>
+                <button id="change-key-btn" style="color:var(--muted)">change</button>
+            </span>
+            <span class="creds-item" id="cred-notion" style="display:none">
+                <span class="creds-dot" id="notion-dot"></span>
+                <span id="notion-cred-label">Notion</span>
+                <button id="change-notion-btn" style="color:var(--muted)">change</button>
+            </span>
         </div>
     </form>
 </div>
@@ -341,11 +382,18 @@
 </div>
 
 <script>
-// -----------------------------------------------------------------------
-// Constants
-// -----------------------------------------------------------------------
+// ── Constants ───────────────────────────────────────────────────────────────
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
-const MODEL = 'claude-opus-4-6';
+const NOTION_API    = 'https://api.notion.com/v1';
+const NOTION_DB_ID  = '0a6ba029-ce7b-403e-8212-ad94aa3b396f';
+const MODEL         = 'claude-opus-4-6';
+
+const PLATFORM_CHANNELS = {
+    LinkedIn: ['LinkedIn'],
+    Substack: ['Substack'],
+    X:        ['X'],
+    YouTube:  ['YouTube'],
+};
 
 const SYSTEM_PROMPT = `You are Daniel Irving's CMS Overseer for a single content pipeline run. Your job is to take one content item from idea to post-ready in this session — research it, draft it, edit it, and hand off a clean posting instruction at the end.
 
@@ -446,20 +494,77 @@ After posting:
 Session complete.`;
 }
 
-// -----------------------------------------------------------------------
-// Mode management: 'checking' | 'server' | 'api' | 'standalone'
-// -----------------------------------------------------------------------
+// ── Credential storage ──────────────────────────────────────────────────────
+function getSavedKey()          { return localStorage.getItem('anthropic_api_key') || ''; }
+function hasSavedKey()          { return !!getSavedKey(); }
+function getSavedNotionToken()  { return localStorage.getItem('notion_token') || ''; }
+function hasSavedNotionToken()  { return !!getSavedNotionToken(); }
+
+// ── Notion helpers ──────────────────────────────────────────────────────────
+function chunkRichText(text) {
+    if (!text) return [{ text: { content: '' } }];
+    const chunks = [];
+    for (let i = 0; i < text.length; i += 1999)
+        chunks.push({ text: { content: text.slice(i, i + 1999) } });
+    return chunks;
+}
+
+async function saveToNotion(title, platform, notes, outputText) {
+    const token = getSavedNotionToken();
+    if (!token) return null;
+
+    const headers = {
+        'Authorization':  `Bearer ${token}`,
+        'Notion-Version': '2022-06-28',
+        'Content-Type':   'application/json',
+    };
+    const channels = (PLATFORM_CHANNELS[platform] || [platform]).map(n => ({ name: n }));
+
+    const pageRes = await fetch(`${NOTION_API}/pages`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+            parent: { database_id: NOTION_DB_ID },
+            properties: {
+                'Content Item':  { title:       [{ text: { content: title } }] },
+                'Stage':         { select:       { name: 'Drafting' } },
+                'Master Copy':   { rich_text:    chunkRichText(outputText) },
+                'Notes':         { rich_text:    chunkRichText(notes || '') },
+                'Channels':      { multi_select: channels },
+                'Human Approved':{ checkbox:     false },
+            },
+        }),
+    });
+
+    if (!pageRes.ok) {
+        const e = await pageRes.json().catch(() => ({}));
+        throw new Error(e.message || `Notion ${pageRes.status}`);
+    }
+    const page = await pageRes.json();
+
+    // Add completion comment (non-fatal if it fails)
+    await fetch(`${NOTION_API}/comments`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+            parent:    { page_id: page.id },
+            rich_text: [{ text: { content: 'Pipeline complete. Review and check Human Approved when ready.' } }],
+        }),
+    }).catch(() => {});
+
+    return page.url || `https://notion.so/${page.id.replace(/-/g, '')}`;
+}
+
+// ── Mode management ─────────────────────────────────────────────────────────
 let mode = 'checking';
 let serverBase = window.location.origin;
 
 function setBanner(m, text) {
     const banner = document.getElementById('mode-banner');
-    const chip   = banner.querySelector('.mode-chip');
-    const desc   = document.getElementById('banner-text');
     banner.className = m;
     const labels = { checking: '⋯', server: '⚡ Server', api: '🔑 API', standalone: '✂ Offline' };
-    chip.textContent = labels[m] || m;
-    desc.textContent = text;
+    banner.querySelector('.mode-chip').textContent = labels[m] || m;
+    document.getElementById('banner-text').textContent = text;
 }
 
 async function checkServer(base) {
@@ -472,38 +577,53 @@ async function checkServer(base) {
     } catch { return false; }
 }
 
-function getSavedKey() { return localStorage.getItem('anthropic_api_key') || ''; }
-function hasSavedKey()  { return !!getSavedKey(); }
+function updateCredsRow() {
+    const row = document.getElementById('creds-row');
+    const hasKey    = hasSavedKey();
+    const hasNotion = hasSavedNotionToken();
+
+    if (mode !== 'api') { row.style.display = 'none'; return; }
+
+    row.style.display = 'flex';
+    document.getElementById('cred-anthropic').style.display = hasKey    ? '' : 'none';
+    const notionEl = document.getElementById('cred-notion');
+    notionEl.style.display = 'flex';
+    document.getElementById('notion-dot').className = 'creds-dot ' + (hasNotion ? 'ok' : 'warn');
+    document.getElementById('notion-cred-label').textContent = hasNotion ? 'Notion' : 'Notion (not set)';
+    document.getElementById('change-notion-btn').textContent = hasNotion ? 'change' : 'set up';
+}
 
 async function initMode() {
-    // 1. Try Flask server (same origin or saved LAN URL)
     const lanUrl = localStorage.getItem('pipeline_server_url');
     if (lanUrl) serverBase = lanUrl;
+
     if (await checkServer(serverBase)) {
         mode = 'server';
         setBanner('server', 'Flask server connected — output streams live');
         document.getElementById('run-btn').textContent = 'Run Pipeline';
-        document.getElementById('key-mgmt').style.display = 'none';
         return;
     }
 
-    // 2. Saved API key → direct mode
     if (hasSavedKey()) {
         mode = 'api';
         setBanner('api', 'Running directly via Anthropic API — no server needed');
         document.getElementById('run-btn').textContent = 'Run Pipeline';
-        document.getElementById('key-mgmt').style.display = 'block';
+
+        // Prompt for Notion token on first time if not set and not skipped
+        if (!hasSavedNotionToken() && !localStorage.getItem('notion_skipped')) {
+            document.getElementById('notion-card').style.display = 'block';
+        }
+        updateCredsRow();
         return;
     }
 
-    // 3. No server, no key → ask for key
     mode = 'standalone';
-    setBanner('standalone', 'Enter your Anthropic API key below to run on-device');
+    setBanner('standalone', 'Enter your Anthropic API key to run on-device, or generate a prompt for Claude.ai');
     document.getElementById('run-btn').textContent = 'Generate Prompt';
     document.getElementById('apikey-card').style.display = 'block';
 }
 
-// Save API key
+// ── Credential event handlers ────────────────────────────────────────────────
 document.getElementById('save-key-btn').addEventListener('click', () => {
     const key = document.getElementById('apikey-input').value.trim();
     if (!key.startsWith('sk-ant')) {
@@ -515,21 +635,47 @@ document.getElementById('save-key-btn').addEventListener('click', () => {
     mode = 'api';
     setBanner('api', 'API key saved — running directly via Anthropic API');
     document.getElementById('run-btn').textContent = 'Run Pipeline';
-    document.getElementById('key-mgmt').style.display = 'block';
+    if (!hasSavedNotionToken() && !localStorage.getItem('notion_skipped'))
+        document.getElementById('notion-card').style.display = 'block';
+    updateCredsRow();
 });
 
 document.getElementById('change-key-btn').addEventListener('click', () => {
     localStorage.removeItem('anthropic_api_key');
     document.getElementById('apikey-input').value = '';
     document.getElementById('apikey-card').style.display = 'block';
-    document.getElementById('key-mgmt').style.display = 'none';
+    document.getElementById('creds-row').style.display = 'none';
     mode = 'standalone';
-    setBanner('standalone', 'Enter a new API key below');
+    setBanner('standalone', 'Enter a new API key');
 });
 
-// -----------------------------------------------------------------------
-// Stage tracking
-// -----------------------------------------------------------------------
+document.getElementById('save-notion-btn').addEventListener('click', () => {
+    const tok = document.getElementById('notion-input').value.trim();
+    if (!tok.startsWith('secret_')) {
+        alert('That doesn\'t look like a Notion integration token (should start with secret_)');
+        return;
+    }
+    localStorage.setItem('notion_token', tok);
+    localStorage.removeItem('notion_skipped');
+    document.getElementById('notion-card').style.display = 'none';
+    updateCredsRow();
+});
+
+document.getElementById('skip-notion-btn').addEventListener('click', () => {
+    localStorage.setItem('notion_skipped', '1');
+    document.getElementById('notion-card').style.display = 'none';
+    updateCredsRow();
+});
+
+document.getElementById('change-notion-btn').addEventListener('click', () => {
+    localStorage.removeItem('notion_token');
+    localStorage.removeItem('notion_skipped');
+    document.getElementById('notion-input').value = '';
+    document.getElementById('notion-card').style.display = 'block';
+    updateCredsRow();
+});
+
+// ── Stage tracking ────────────────────────────────────────────────────────────
 const STAGE_MARKERS = [
     { chip: 'chip-1', re: /research complete\./i },
     { chip: 'chip-2', re: /draft complete\./i },
@@ -556,9 +702,7 @@ function updateStages(text) {
     }
 }
 
-// -----------------------------------------------------------------------
-// UI helpers
-// -----------------------------------------------------------------------
+// ── UI helpers ────────────────────────────────────────────────────────────────
 function setStatus(state, label) {
     const b = document.getElementById('status-badge');
     b.className = 'status-badge ' + state;
@@ -567,20 +711,64 @@ function setStatus(state, label) {
 
 function showOutput(streaming) {
     document.getElementById('output-card').style.display = 'block';
-    document.getElementById('output-box').style.display         = streaming ? 'block' : 'none';
-    document.getElementById('standalone-box').style.display     = streaming ? 'none'  : 'block';
-    document.getElementById('copy-btn').style.display           = streaming ? ''      : 'none';
-    document.getElementById('copy-standalone-btn').style.display= streaming ? 'none'  : '';
-    document.getElementById('open-claude-btn').style.display    = streaming ? 'none'  : '';
+    document.getElementById('output-box').style.display          = streaming ? 'block' : 'none';
+    document.getElementById('standalone-box').style.display      = streaming ? 'none'  : 'block';
+    document.getElementById('copy-btn').style.display            = streaming ? ''      : 'none';
+    document.getElementById('copy-standalone-btn').style.display = streaming ? 'none'  : '';
+    document.getElementById('open-claude-btn').style.display     = streaming ? 'none'  : '';
     document.getElementById('output-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 let currentReader = null;
-let fullOutput = '';
+let fullOutput    = '';
 
-// -----------------------------------------------------------------------
-// SERVER MODE: SSE from Flask
-// -----------------------------------------------------------------------
+// ── finishRun ─────────────────────────────────────────────────────────────────
+async function finishRun(cursor, file, notionUrlFromServer) {
+    cursor.remove();
+    setStatus('done', 'Complete');
+    document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip complete');
+    resetRunBtn();
+
+    const title    = document.getElementById('title').value.trim();
+    const platform = document.getElementById('platform').value;
+    const notes    = document.getElementById('notes').value;
+    const notice   = document.getElementById('saved-notice');
+    notice.style.display = 'block';
+
+    // Build notice progressively
+    const filePart = file ? `Saved → ${file}` : '';
+    if (filePart) notice.textContent = filePart;
+
+    // Notion: use server-provided URL, or call from browser if we have a token
+    let notionUrl = notionUrlFromServer || null;
+
+    if (!notionUrl && hasSavedNotionToken()) {
+        notice.innerHTML = (filePart ? filePart + '  |  ' : '') + 'Saving to Notion…';
+        try {
+            notionUrl = await saveToNotion(title, platform, notes, fullOutput);
+        } catch (err) {
+            notice.innerHTML = (filePart ? filePart + '<br>' : '') +
+                `⚠ Notion error: ${err.message} — check your integration token and database sharing.`;
+            return;
+        }
+    }
+
+    // Final notice
+    const parts = [];
+    if (filePart) parts.push(filePart);
+    if (notionUrl) parts.push(`Saved to Notion → <a href="${notionUrl}" target="_blank">open page ↗</a>`);
+    if (parts.length) {
+        notice.innerHTML = parts.join('<br>');
+    } else {
+        notice.style.display = 'none';
+        // First run without Notion: offer to set it up
+        if (mode === 'api' && !hasSavedNotionToken() && !localStorage.getItem('notion_skipped')) {
+            document.getElementById('notion-card').style.display = 'block';
+        }
+    }
+}
+
+// ── SERVER mode ───────────────────────────────────────────────────────────────
 async function runServer(title, platform, domain, notes) {
     fullOutput = '';
     resetStages();
@@ -591,16 +779,16 @@ async function runServer(title, platform, domain, notes) {
     document.getElementById('run-btn').disabled = true;
     document.getElementById('stop-btn').style.display = 'inline-block';
 
-    const box = document.getElementById('output-box');
+    const box    = document.getElementById('output-box');
     const cursor = document.createElement('span');
     cursor.className = 'cursor';
     box.appendChild(cursor);
 
     try {
         const res = await fetch(serverBase + '/run', {
-            method: 'POST',
+            method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, platform, domain, notes }),
+            body:    JSON.stringify({ title, platform, domain, notes }),
         });
         currentReader = res.body.getReader();
         const dec = new TextDecoder();
@@ -619,7 +807,9 @@ async function runServer(title, platform, domain, notes) {
                     box.scrollTop = box.scrollHeight;
                     updateStages(fullOutput);
                 } else if (msg.type === 'done') {
-                    finishRun(cursor, msg.file);
+                    // Server already saved to Notion if NOTION_API_TOKEN is set there;
+                    // pass the URL (or null) so browser doesn't double-save.
+                    await finishRun(cursor, msg.file, msg.notion_url || null);
                 } else if (msg.type === 'error') {
                     cursor.remove();
                     setStatus('error', 'Error');
@@ -638,11 +828,8 @@ async function runServer(title, platform, domain, notes) {
     }
 }
 
-// -----------------------------------------------------------------------
-// API MODE: direct Anthropic streaming from browser
-// -----------------------------------------------------------------------
+// ── API mode ──────────────────────────────────────────────────────────────────
 async function runApi(title, platform, domain, notes) {
-    const apiKey = getSavedKey();
     fullOutput = '';
     resetStages();
     document.getElementById('output-box').textContent = '';
@@ -652,7 +839,7 @@ async function runApi(title, platform, domain, notes) {
     document.getElementById('run-btn').disabled = true;
     document.getElementById('stop-btn').style.display = 'inline-block';
 
-    const box = document.getElementById('output-box');
+    const box    = document.getElementById('output-box');
     const cursor = document.createElement('span');
     cursor.className = 'cursor';
     box.appendChild(cursor);
@@ -666,17 +853,17 @@ async function runApi(title, platform, domain, notes) {
             method: 'POST',
             signal: controller.signal,
             headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': apiKey,
+                'Content-Type':   'application/json',
+                'x-api-key':      getSavedKey(),
                 'anthropic-version': '2023-06-01',
                 'anthropic-dangerous-direct-browser-access': 'true',
             },
             body: JSON.stringify({
-                model: MODEL,
+                model:      MODEL,
                 max_tokens: 8096,
-                stream: true,
-                system: SYSTEM_PROMPT,
-                messages: [{ role: 'user', content: buildPrompt(title, platform, domain, notes) }],
+                stream:     true,
+                system:     SYSTEM_PROMPT,
+                messages:   [{ role: 'user', content: buildPrompt(title, platform, domain, notes) }],
             }),
         });
 
@@ -686,8 +873,8 @@ async function runApi(title, platform, domain, notes) {
         }
 
         const reader = res.body.getReader();
-        const dec = new TextDecoder();
-        let buf = '';
+        const dec    = new TextDecoder();
+        let buf      = '';
 
         while (true) {
             const { value, done } = await reader.read();
@@ -700,17 +887,15 @@ async function runApi(title, platform, domain, notes) {
                 if (raw === '[DONE]') continue;
                 let evt; try { evt = JSON.parse(raw); } catch { continue; }
 
-                if (evt.type === 'content_block_delta') {
-                    const d = evt.delta;
-                    if (d.type === 'text_delta') {
-                        fullOutput += d.text;
-                        cursor.insertAdjacentText('beforebegin', d.text);
-                        box.scrollTop = box.scrollHeight;
-                        updateStages(fullOutput);
-                    }
-                    // skip thinking_delta silently
+                if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+                    fullOutput += evt.delta.text;
+                    cursor.insertAdjacentText('beforebegin', evt.delta.text);
+                    box.scrollTop = box.scrollHeight;
+                    updateStages(fullOutput);
                 } else if (evt.type === 'message_stop') {
-                    finishRun(cursor, null);
+                    await finishRun(cursor, null, null);
+                    saveHistory({ title, platform, domain, notes, date: todayLabel() });
+                    renderHistory();
                 }
             }
         }
@@ -719,10 +904,8 @@ async function runApi(title, platform, domain, notes) {
         if (!aborted) {
             setStatus('error', 'Error');
             box.textContent += '\n\n⚠ ' + err.message;
-            // If auth error, prompt to re-enter key
-            if (err.message.includes('401') || err.message.includes('authentication')) {
+            if (err.message.includes('401') || err.message.toLowerCase().includes('auth'))
                 document.getElementById('apikey-card').style.display = 'block';
-            }
         } else {
             setStatus('idle', 'Stopped');
         }
@@ -730,31 +913,20 @@ async function runApi(title, platform, domain, notes) {
     }
 }
 
-// -----------------------------------------------------------------------
-// STANDALONE MODE: generate prompt for clipboard
-// -----------------------------------------------------------------------
+// ── Standalone mode ───────────────────────────────────────────────────────────
 function runStandalone(title, platform, domain, notes) {
-    const prompt = buildPrompt(title, platform, domain, notes);
-    fullOutput = prompt;
+    // Bug fix: prepend SYSTEM_PROMPT so Claude.ai gets the full context
+    const fullPrompt = SYSTEM_PROMPT + '\n\n' + '─'.repeat(60) + '\n\n' +
+        buildPrompt(title, platform, domain, notes);
+    fullOutput = fullPrompt;
+
     resetStages();
     document.getElementById('saved-notice').style.display = 'none';
     showOutput(false);
-    document.getElementById('standalone-box').value = prompt;
+    document.getElementById('standalone-box').value = fullPrompt;
     setStatus('done', 'Prompt ready — copy and paste into Claude.ai');
     saveHistory({ title, platform, domain, notes, date: todayLabel() });
     renderHistory();
-}
-
-function finishRun(cursor, file) {
-    cursor.remove();
-    setStatus('done', 'Complete');
-    document.querySelectorAll('.stage-chip').forEach(c => c.className = 'stage-chip complete');
-    resetRunBtn();
-    if (file) {
-        const n = document.getElementById('saved-notice');
-        n.textContent = `Saved → ${file}`;
-        n.style.display = 'block';
-    }
 }
 
 function resetRunBtn() {
@@ -763,9 +935,7 @@ function resetRunBtn() {
     currentReader = null;
 }
 
-// -----------------------------------------------------------------------
-// Form submit
-// -----------------------------------------------------------------------
+// ── Form submit ───────────────────────────────────────────────────────────────
 document.getElementById('pipeline-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const title    = document.getElementById('title').value.trim();
@@ -774,15 +944,9 @@ document.getElementById('pipeline-form').addEventListener('submit', async functi
     const notes    = document.getElementById('notes').value;
     if (!title) return;
 
-    if (mode === 'server') {
-        await runServer(title, platform, domain, notes);
-    } else if (mode === 'api') {
-        await runApi(title, platform, domain, notes);
-        saveHistory({ title, platform, domain, notes, date: todayLabel() });
-        renderHistory();
-    } else {
-        runStandalone(title, platform, domain, notes);
-    }
+    if      (mode === 'server')     await runServer(title, platform, domain, notes);
+    else if (mode === 'api')        await runApi(title, platform, domain, notes);
+    else                            runStandalone(title, platform, domain, notes);
 });
 
 // Stop
@@ -794,28 +958,21 @@ document.getElementById('stop-btn').addEventListener('click', () => {
     resetRunBtn();
 });
 
-// Copy (streaming)
+// Copy buttons
 document.getElementById('copy-btn').addEventListener('click', async () => {
-    if (!fullOutput) return;
-    await copyText(fullOutput, 'copy-fb');
+    if (fullOutput) await copyText(fullOutput, 'copy-fb');
 });
-
-// Copy (standalone)
 document.getElementById('copy-standalone-btn').addEventListener('click', async () => {
     const val = document.getElementById('standalone-box').value;
-    if (!val) return;
-    await copyText(val, 'copy-standalone-fb');
+    if (val) await copyText(val, 'copy-standalone-fb');
 });
-
 document.getElementById('open-claude-btn').addEventListener('click', () => {
     window.open('https://claude.ai/new', '_blank');
 });
 
 async function copyText(text, feedbackId) {
-    try {
-        await navigator.clipboard.writeText(text);
-    } catch {
-        // Android fallback: select the textarea
+    try { await navigator.clipboard.writeText(text); }
+    catch {
         const box = document.getElementById('standalone-box');
         if (box) { box.select(); document.execCommand('copy'); }
     }
@@ -824,19 +981,17 @@ async function copyText(text, feedbackId) {
     setTimeout(() => fb.classList.remove('show'), 2000);
 }
 
-// -----------------------------------------------------------------------
-// History
-// -----------------------------------------------------------------------
+// ── History ───────────────────────────────────────────────────────────────────
 const HISTORY_KEY = 'pipeline_history';
-function loadHistory()    { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; } }
-function saveHistory(e)   { const h = loadHistory(); h.unshift(e); localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 20))); }
-function todayLabel()     { return new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }); }
-function escHtml(s)       { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function loadHistory()  { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; } }
+function saveHistory(e) { const h = loadHistory(); h.unshift(e); localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 20))); }
+function todayLabel()   { return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+function escHtml(s)     { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function renderHistory() {
     const history = loadHistory();
-    const card = document.getElementById('history-card');
-    const list = document.getElementById('history-list');
+    const card    = document.getElementById('history-card');
+    const list    = document.getElementById('history-list');
     if (!history.length) { card.style.display = 'none'; return; }
     card.style.display = 'block';
     list.innerHTML = '';
@@ -860,16 +1015,12 @@ function renderHistory() {
     });
 }
 
-// -----------------------------------------------------------------------
-// PWA service worker
-// -----------------------------------------------------------------------
+// ── PWA service worker ────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 
-// -----------------------------------------------------------------------
-// Init
-// -----------------------------------------------------------------------
+// ── Init ──────────────────────────────────────────────────────────────────────
 renderHistory();
 initMode();
 </script>

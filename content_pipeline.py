@@ -29,9 +29,12 @@ Environment
 
 import anthropic
 import argparse
+import json
 import os
 import re
 import sys
+import urllib.error
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
@@ -42,6 +45,17 @@ from pathlib import Path
 PLATFORMS = ["LinkedIn", "Substack", "X", "YouTube"]
 DOMAINS = ["Irving Insights", "Book", "TBK", "SubSignal", "Personal"]
 SYSTEM_MODEL = "claude-opus-4-6"
+
+NOTION_DB_ID  = "0a6ba029-ce7b-403e-8212-ad94aa3b396f"
+NOTION_API    = "https://api.notion.com/v1"
+NOTION_VER    = "2022-06-28"
+
+PLATFORM_CHANNELS: dict[str, list[str]] = {
+    "LinkedIn": ["LinkedIn"],
+    "Substack": ["Substack"],
+    "X":        ["X"],
+    "YouTube":  ["YouTube"],
+}
 
 SYSTEM_PROMPT = """You are Daniel Irving's CMS Overseer for a single content pipeline run.
 Your job is to take one content item from idea to post-ready in this session —
@@ -164,6 +178,60 @@ def ensure_output_dir() -> Path:
     return output_dir
 
 
+# ---------------------------------------------------------------------------
+# Notion integration
+# ---------------------------------------------------------------------------
+
+def _chunk_rich_text(text: str) -> list:
+    """Split text into 1999-char blocks (Notion rich_text limit is 2000)."""
+    if not text:
+        return [{"text": {"content": ""}}]
+    return [{"text": {"content": text[i:i + 1999]}} for i in range(0, len(text), 1999)]
+
+
+def _notion_req(method: str, path: str, token: str, body: dict | None = None) -> dict:
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(
+        f"{NOTION_API}{path}",
+        data=data,
+        method=method,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Notion-Version": NOTION_VER,
+            "Content-Type": "application/json",
+        },
+    )
+    with urllib.request.urlopen(req) as resp:
+        return json.loads(resp.read())
+
+
+def save_to_notion(inputs: dict, output_text: str, token: str) -> str:
+    """Create a page in SignalWorks — Content Items, add a completion comment.
+
+    Returns the Notion page URL.
+    """
+    channels = [{"name": ch} for ch in PLATFORM_CHANNELS.get(inputs["platform"], [inputs["platform"]])]
+
+    page = _notion_req("POST", "/pages", token, {
+        "parent": {"database_id": NOTION_DB_ID},
+        "properties": {
+            "Content Item":  {"title":        [{"text": {"content": inputs["title"]}}]},
+            "Stage":         {"select":        {"name": "Drafting"}},
+            "Master Copy":   {"rich_text":     _chunk_rich_text(output_text)},
+            "Notes":         {"rich_text":     _chunk_rich_text(inputs.get("notes", ""))},
+            "Channels":      {"multi_select":  channels},
+            "Human Approved":{"checkbox":      False},
+        },
+    })
+
+    _notion_req("POST", "/comments", token, {
+        "parent":    {"page_id": page["id"]},
+        "rich_text": [{"text": {"content": "Pipeline complete. Review and check Human Approved when ready."}}],
+    })
+
+    return page.get("url", f"https://notion.so/{page['id'].replace('-', '')}")
+
+
 def prompt_choice(label: str, choices: list[str]) -> str:
     """Interactive single-choice prompt."""
     print(f"\n{label}")
@@ -222,7 +290,7 @@ def gather_inputs(args: argparse.Namespace) -> dict:
 # Pipeline runner
 # ---------------------------------------------------------------------------
 
-def run_pipeline(inputs: dict, save: bool = True) -> str:
+def run_pipeline(inputs: dict, save: bool = True, notion: bool = True) -> str:
     """Build the prompt, stream from Claude, and return the full output."""
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -270,15 +338,30 @@ def run_pipeline(inputs: dict, save: bool = True) -> str:
     if save:
         _save_output(inputs, output_text)
 
+    if notion:
+        notion_token = os.environ.get("NOTION_API_TOKEN")
+        if notion_token:
+            print("Saving to Notion…", end=" ", flush=True)
+            try:
+                url = save_to_notion(inputs, output_text, notion_token)
+                print(f"done → {url}")
+            except urllib.error.HTTPError as exc:
+                body = exc.read().decode()
+                print(f"⚠ Notion error {exc.code}: {body}")
+            except Exception as exc:
+                print(f"⚠ Notion error: {exc}")
+        else:
+            print("(Tip: set NOTION_API_TOKEN to auto-save to Notion)")
+
     return output_text
 
 
 def _save_output(inputs: dict, text: str) -> None:
     """Save pipeline output as a markdown file."""
     output_dir = ensure_output_dir()
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    ts = datetime.now().strftime("%Y-%m-%d_%H-%M")
     slug = slugify(inputs["title"])
-    filename = f"{date_str}_{slug}.md"
+    filename = f"{ts}_{slug}.md"
     filepath = output_dir / filename
 
     header = (
@@ -339,6 +422,11 @@ Examples:
         action="store_true",
         help="Do not save output to file (print to terminal only)",
     )
+    parser.add_argument(
+        "--no-notion",
+        action="store_true",
+        help="Skip saving to Notion even if NOTION_API_TOKEN is set",
+    )
     return parser
 
 
@@ -346,7 +434,7 @@ def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
     inputs = gather_inputs(args)
-    run_pipeline(inputs, save=not args.no_save)
+    run_pipeline(inputs, save=not args.no_save, notion=not args.no_notion)
 
 
 if __name__ == "__main__":
