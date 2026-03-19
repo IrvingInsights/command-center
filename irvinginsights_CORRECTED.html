@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Irving Insights | Strategy for Mission-Driven Nonprofits</title>
+  <meta name="description" content="Irving Insights Consulting — operational strategy and values-based planning for mission-driven nonprofits, camps, and education organizations. Principal Consultant Daniel Irving brings 30+ years of experiential education and nonprofit leadership.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0b1114;
+      --surface:   #131c22;
+      --border:    #1e2d36;
+      --cyan:      #37C8D6;
+      --orange:    #E68721;
+      --green:     #6BC539;
+      --text:      #e8edf0;
+      --muted:     #8fa3b0;
+      --heading-font: 'DM Serif Display', Georgia, serif;
+      --body-font:    'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body-font);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── Nav ──────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 17, 20, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-logo {
+      font-family: var(--heading-font);
+      font-size: 1.2rem;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .nav-logo span { color: var(--cyan); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    .nav-cta {
+      background: var(--cyan);
+      color: var(--bg) !important;
+      padding: 0.45rem 1.1rem;
+      border-radius: 4px;
+      font-weight: 600 !important;
+    }
+
+    .nav-cta:hover { background: #2eb4c1; color: var(--bg) !important; }
+
+    /* ─── Hero ─────────────────────────────────────────────── */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 7rem 2rem 6rem;
+    }
+
+    .kicker {
+      display: inline-block;
+      font-family: var(--body-font);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      border-radius: 3px;
+      padding: 0.3rem 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: var(--heading-font);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      line-height: 1.15;
+      color: var(--text);
+      max-width: 800px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--orange);
+    }
+
+    .hero-sub {
+      font-size: 1.125rem;
+      color: var(--muted);
+      max-width: 580px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: var(--bg);
+      font-weight: 600;
+      padding: 0.8rem 1.8rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover { background: #2eb4c1; text-decoration: none; color: var(--bg); }
+
+    .btn-secondary {
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.8rem 1.8rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--muted); text-decoration: none; color: var(--text); }
+
+    /* ─── Divider ──────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ─── Section Shared ───────────────────────────────────── */
+    section { padding: 5rem 2rem; }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: var(--heading-font);
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      line-height: 1.2;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-body {
+      color: var(--muted);
+      max-width: 620px;
+      line-height: 1.75;
+    }
+
+    /* ─── Services ─────────────────────────────────────────── */
+    #services { background: var(--surface); }
+
+    .services-header {
+      margin-bottom: 3rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .icon-cyan  { background: rgba(55, 200, 214, 0.12); }
+    .icon-orange { background: rgba(230, 135, 33, 0.12); }
+    .icon-green { background: rgba(107, 197, 57, 0.12); }
+
+    .card h3 {
+      font-family: var(--heading-font);
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ─── About ────────────────────────────────────────────── */
+    #about .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .stat-number {
+      font-family: var(--heading-font);
+      font-size: 2.2rem;
+      color: var(--cyan);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* ─── Who We Serve ─────────────────────────────────────── */
+    #who { background: var(--surface); }
+
+    .sectors {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .sector-pill {
+      background: rgba(55, 200, 214, 0.08);
+      border: 1px solid rgba(55, 200, 214, 0.25);
+      border-radius: 100px;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.875rem;
+      color: var(--cyan);
+      font-weight: 500;
+    }
+
+    /* ─── Contact ──────────────────────────────────────────── */
+    #contact {
+      text-align: center;
+    }
+
+    #contact .section-inner {
+      max-width: 600px;
+    }
+
+    #contact .section-body {
+      max-width: 100%;
+      margin: 0 auto 2.5rem;
+    }
+
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-top: 2rem;
+      text-align: left;
+    }
+
+    .contact-line {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .contact-line:last-child { border-bottom: none; }
+
+    .contact-line .icon { font-size: 1.1rem; width: 24px; text-align: center; }
+
+    .contact-line a { color: var(--text); }
+    .contact-line a:hover { color: var(--cyan); }
+
+    /* ─── Footer ───────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer p {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .footer-logo {
+      font-family: var(--heading-font);
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .footer-logo span { color: var(--cyan); }
+
+    /* ─── Responsive ───────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+
+      #about .about-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .about-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .about-stats { grid-template-columns: 1fr; }
+      .hero { padding: 4rem 1.25rem 3.5rem; }
+      section { padding: 3.5rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Navigation ──────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">Irving <span>Insights</span></span>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#who">Who We Serve</a></li>
+      <li><a href="#contact" class="nav-cta">Work Together</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ─── Hero ────────────────────────────────────────────────── -->
+<section class="hero" id="home">
+  <span class="kicker">Operational Strategy &amp; Values-Based Planning</span>
+  <h1>Helping mission-driven organizations <em>lead with clarity.</em></h1>
+  <p class="hero-sub">
+    Principal Consultant, Irving Insights Consulting — operational strategy and
+    values-based planning for nonprofits, camps, and education organizations
+    ready to grow with intention.
+  </p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Start a Conversation</a>
+    <a href="#services" class="btn-secondary">Explore Services</a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ─── Services ────────────────────────────────────────────── -->
+<section id="services">
+  <div class="section-inner">
+    <div class="services-header">
+      <p class="section-label">What We Do</p>
+      <h2 class="section-title">Strategy rooted in your values</h2>
+      <p class="section-body">
+        Every engagement starts with listening. We build operational plans,
+        communications frameworks, and leadership structures that actually
+        reflect who you are — not just where you want to go.
+      </p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon icon-cyan">🧭</div>
+        <h3>Operational Strategy</h3>
+        <p>
+          Organizational assessments, strategic planning, and operational
+          redesign that aligns your day-to-day work with your long-term mission.
+          Built for durability, not just the next board meeting.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon icon-orange">🌱</div>
+        <h3>Values-Based Planning</h3>
+        <p>
+          Facilitated planning processes that surface the values already alive
+          in your organization and translate them into clear priorities,
+          decision frameworks, and shared language for your team.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon icon-green">🗣️</div>
+        <h3>Leadership Advisory</h3>
+        <p>
+          One-on-one advisory for executive directors, camp directors, and
+          senior leaders navigating transition, growth, or culture challenges.
+          Honest partnership, practical tools.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon icon-cyan">✍️</div>
+        <h3>Communications &amp; Narrative</h3>
+        <p>
+          Messaging frameworks, case statements, and organizational storytelling
+          that help your community understand why you exist — and why it matters.
+          No jargon; just clarity.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon icon-orange">🏕️</div>
+        <h3>Camp &amp; Program Design</h3>
+        <p>
+          Program architecture, staff culture, and experiential design consulting
+          for residential and day camps, outdoor education programs, and
+          youth-serving organizations.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon icon-green">📋</div>
+        <h3>Board &amp; Governance Support</h3>
+        <p>
+          Board development, governance structures, and retreat facilitation
+          that strengthen the partnership between leadership and governance —
+          especially in moments of change.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── About ────────────────────────────────────────────────── -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-label">About Daniel Irving</p>
+        <h2 class="section-title">30+ years leading<br>mission-driven organizations</h2>
+        <p>
+          Daniel Irving brings three decades of hands-on leadership in
+          experiential education, residential camping, and nonprofit management.
+          He has served as a camp director, program designer, and organizational
+          leader — roles that shaped a consulting practice grounded in what
+          actually works in the field.
+        </p>
+        <p>
+          Irving Insights Consulting works primarily with nonprofits, camps,
+          and education organizations seeking to strengthen their operational
+          foundation, deepen their values alignment, and build leadership
+          capacity at every level of the organization.
+        </p>
+        <p>
+          The work is relational, direct, and designed to leave your team
+          more capable — not dependent on outside consultants.
+        </p>
+      </div>
+      <div class="about-stats">
+        <div class="stat">
+          <div class="stat-number">30+</div>
+          <div class="stat-label">Years in experiential education &amp; nonprofit leadership</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">100+</div>
+          <div class="stat-label">Organizations supported across the nonprofit sector</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">Values</div>
+          <div class="stat-label">Always the starting point — not the afterthought</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">Field-<br>tested</div>
+          <div class="stat-label">Every framework built from real organizational experience</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Who We Serve ─────────────────────────────────────────── -->
+<section id="who">
+  <div class="section-inner">
+    <p class="section-label">Who We Serve</p>
+    <h2 class="section-title">Built for organizations<br>with a clear sense of purpose</h2>
+    <p class="section-body">
+      Irving Insights works best with organizations that know why they exist —
+      and are ready to align their operations with that purpose.
+      We work across sectors with a consistent focus: mission first.
+    </p>
+    <div class="sectors">
+      <span class="sector-pill">Mission-Driven Nonprofits</span>
+      <span class="sector-pill">Residential &amp; Day Camps</span>
+      <span class="sector-pill">Outdoor Education Programs</span>
+      <span class="sector-pill">Youth Development Organizations</span>
+      <span class="sector-pill">Faith-Based Organizations</span>
+      <span class="sector-pill">Educational Institutions</span>
+      <span class="sector-pill">Community Organizations</span>
+      <span class="sector-pill">Social Enterprises</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Contact ──────────────────────────────────────────────── -->
+<section id="contact">
+  <div class="section-inner">
+    <p class="section-label">Get in Touch</p>
+    <h2 class="section-title">Let's talk about your organization</h2>
+    <p class="section-body">
+      Every engagement starts with a conversation. Reach out to share where
+      your organization is, what you're navigating, and what kind of support
+      might be helpful.
+    </p>
+
+    <div class="contact-card">
+      <div class="contact-line">
+        <span class="icon">👤</span>
+        <span>Daniel Irving, Principal Consultant</span>
+      </div>
+      <div class="contact-line">
+        <span class="icon">🏢</span>
+        <span>Irving Insights Consulting</span>
+      </div>
+      <div class="contact-line">
+        <span class="icon">🌐</span>
+        <a href="https://irvinginsights.com">irvinginsights.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ───────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">Irving <span>Insights</span> Consulting</span>
+    <p>© 2025 Irving Insights Consulting. Operational strategy &amp; values-based planning for mission-driven nonprofits.</p>
+  </div>
+</footer>
+
+</body>
+</html>
