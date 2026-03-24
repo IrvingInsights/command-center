@@ -1,0 +1,18 @@
+{
+  "units": "mm",
+  "name": "pipe_pivot_v1",
+  "rib_length": 600,
+  "rib_height": 140,
+  "rib_thickness": 38,
+  "pipe_outer_diameter": 60.3,
+  "pipe_inner_diameter": 52.5,
+  "bore_diameter": 64.0,
+  "sleeve_outer_diameter": 64.0,
+  "sleeve_inner_diameter": 60.8,
+  "sleeve_length": 38,
+  "edge_distance": 40,
+  "washer_outer_diameter": 90,
+  "washer_inner_diameter": 61,
+  "retention_gap": 2.0,
+  "clearance_note": "Adjust sleeve/pipe/bore fit after first geometry review"
+}
