@@ -1,0 +1,17 @@
+{
+  "units": "mm",
+  "name": "ridge_scissor_v1",
+  "rafter_length": 3658,
+  "rafter_width": 140,
+  "rafter_thickness": 38,
+  "ridge_pipe_outer_diameter": 60.3,
+  "ridge_pipe_inner_diameter": 52.5,
+  "sleeve_outer_diameter": 64.0,
+  "sleeve_inner_diameter": 60.8,
+  "deployment_angle_degrees": 60,
+  "lock_clearance": 3,
+  "lock_beam_width": 89,
+  "lock_beam_thickness": 38,
+  "pin_diameter": 12.7,
+  "collision_buffer": 2.0
+}
