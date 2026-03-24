@@ -1,0 +1,17 @@
+{
+  "units": "mm",
+  "name": "cassette_corner_v1",
+  "cassette_length": 1200,
+  "cassette_width": 600,
+  "cassette_depth": 184,
+  "subfloor_thickness": 19,
+  "hinge_axis_outer_diameter": 48.3,
+  "hinge_bore_diameter": 52.0,
+  "bearing_plate_length": 180,
+  "bearing_plate_width": 120,
+  "bearing_plate_thickness": 10,
+  "compression_block_length": 120,
+  "compression_block_width": 89,
+  "compression_block_height": 89,
+  "clearance": 2.0
+}
