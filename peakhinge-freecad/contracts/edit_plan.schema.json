@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://peakhinge.local/schemas/edit_plan.schema.json",
+  "title": "EditPlan",
+  "type": "object",
+  "required": ["subassembly", "changes", "assumptions", "status"],
+  "properties": {
+    "subassembly": { "type": "string", "const": "pipe_pivot" },
+    "changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["parameter", "old_value", "new_value", "unit"],
+        "properties": {
+          "parameter": { "type": "string" },
+          "old_value": { "type": ["number", "string", "integer"] },
+          "new_value": { "type": ["number", "string", "integer"] },
+          "unit": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "status": { "type": "string", "enum": ["applied", "failed"] }
+  },
+  "additionalProperties": false
+}
