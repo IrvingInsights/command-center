@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PeakHinge Step-1 Chat v2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; max-width: 900px; }
+    textarea, input, button, pre { width: 100%; box-sizing: border-box; }
+    textarea { min-height: 100px; }
+    button { margin-top: 8px; padding: 10px 12px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .card { border: 1px solid #ddd; padding: 14px; border-radius: 8px; margin-top: 16px; }
+    pre { background: #f7f7f7; padding: 12px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>PeakHinge Step-1 Chat v2</h1>
+  <p>This workable MVP edits <code>pipe_pivot_v1</code>, runs the local FreeCAD build, and returns artifact paths.</p>
+
+  <div class="card">
+    <label for="request"><strong>Request</strong></label>
+    <textarea id="request">set bore diameter to 65 mm</textarea>
+    <label><input type="checkbox" id="strict" checked> Require real FreeCAD</label>
+    <div class="row">
+      <button id="runBtn">Run request</button>
+      <button id="revertBtn">Revert last</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>State</h2>
+    <button id="stateBtn">Refresh state</button>
+    <pre id="stateOut"></pre>
+  </div>
+
+  <div class="card">
+    <h2>Result</h2>
+    <pre id="resultOut"></pre>
+  </div>
+
+  <script>
+    async function refreshState() {
+      const resp = await fetch('/api/state');
+      const data = await resp.json();
+      document.getElementById('stateOut').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function runChat() {
+      const request_text = document.getElementById('request').value.trim();
+      const strict_freecad = document.getElementById('strict').checked;
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ request_text, strict_freecad })
+      });
+      const data = await resp.json();
+      document.getElementById('resultOut').textContent = JSON.stringify(data, null, 2);
+      await refreshState();
+    }
+
+    async function revertLast() {
+      const strict_freecad = document.getElementById('strict').checked;
+      const resp = await fetch('/api/revert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strict_freecad })
+      });
+      const data = await resp.json();
+      document.getElementById('resultOut').textContent = JSON.stringify(data, null, 2);
+      await refreshState();
+    }
+
+    document.getElementById('runBtn').addEventListener('click', runChat);
+    document.getElementById('revertBtn').addEventListener('click', revertLast);
+    document.getElementById('stateBtn').addEventListener('click', refreshState);
+    refreshState();
+  </script>
+</body>
+</html>
