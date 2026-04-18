@@ -556,8 +556,9 @@
     </div>
 
     <!-- History -->
-    <div style="padding:10px 12px 6px; border-bottom:1px solid var(--border);">
-      <div class="sidebar-label" style="padding:0 4px">Session History</div>
+    <div style="padding:10px 12px 6px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+      <div class="sidebar-label" style="padding:0 4px; margin-bottom:0">Session History</div>
+      <button onclick="clearHistory()" title="Clear history" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--muted)'">Clear</button>
     </div>
     <div class="history-list" id="historyList">
       <div style="font-size:11px;color:var(--muted);padding:8px;text-align:center;">No history yet</div>
@@ -959,56 +960,131 @@ function removeTyping(id) {
 }
 
 // ── HISTORY ─────────────────────────────────────────────
+function loadHistory() {
+  try { historyItems = JSON.parse(localStorage.getItem('irving-history') || '[]'); } catch {}
+  renderHistory();
+}
+function saveHistory() {
+  try { localStorage.setItem('irving-history', JSON.stringify(historyItems.slice(0, 50))); } catch {}
+}
+function clearHistory() {
+  historyItems = [];
+  saveHistory();
+  renderHistory();
+}
 function addToHistory(prompt, model) {
-  historyItems.unshift({ prompt, model });
+  historyItems.unshift({ prompt, model, ts: Date.now() });
+  saveHistory();
   renderHistory();
 }
 function renderHistory() {
   const list = document.getElementById('historyList');
+  list.innerHTML = '';
   if (historyItems.length === 0) {
-    list.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px;text-align:center;">No history yet</div>';
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:11px;color:var(--muted);padding:8px;text-align:center;';
+    empty.textContent = 'No history yet';
+    list.appendChild(empty);
     return;
   }
-  list.innerHTML = historyItems.slice(0, 20).map((item, i) => `
-    <div class="history-item" onclick="sendQuick(${JSON.stringify(item.prompt)})">
-      <div class="h-model ${item.model}">${(item.model||'auto').toUpperCase()}</div>
-      ${item.prompt.length > 60 ? item.prompt.slice(0, 60) + '…' : item.prompt}
-    </div>
-  `).join('');
+  historyItems.slice(0, 20).forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    const badge = document.createElement('div');
+    badge.className = `h-model ${item.model || 'auto'}`;
+    badge.textContent = (item.model || 'auto').toUpperCase();
+    div.appendChild(badge);
+    const label = document.createTextNode(
+      item.prompt.length > 60 ? item.prompt.slice(0, 60) + '…' : item.prompt
+    );
+    div.appendChild(label);
+    div.addEventListener('click', () => sendQuick(item.prompt));
+    list.appendChild(div);
+  });
 }
 
 // ── MARKDOWN RENDERER ────────────────────────────────────
-function renderMarkdown(text) {
-  if (!text) return '';
-  return text
-    // code blocks
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-    // inline code
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // bold
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // italic
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // h3
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    // h2
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    // h1
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    // numbered list
-    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-    // bullet list
-    .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
-    // wrap li in ol/ul (simple)
-    .replace(/((<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>')
-    // paragraphs
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[hpuol])(.+)$/gm, (m) => m.startsWith('<') ? m : m)
-    .replace(/^([^<\n][^\n]+)$/gm, '$1')
-    .trim();
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-const modelLabels  = { claude: 'Claude Opus', gpt: 'GPT-4o', gemini: 'Gemini 1.5', auto: 'Auto' };
+function renderMarkdown(text) {
+  if (!text) return '';
+
+  // Stash fenced code blocks so inner content is never transformed
+  const blocks = [];
+  text = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => {
+    blocks.push(`<pre><code>${escapeHtml(code.replace(/\n$/, ''))}</code></pre>`);
+    return `\x00B${blocks.length - 1}\x00`;
+  });
+  const inlines = [];
+  text = text.replace(/`([^`\n]+)`/g, (_, code) => {
+    inlines.push(`<code>${escapeHtml(code)}</code>`);
+    return `\x00I${inlines.length - 1}\x00`;
+  });
+
+  // Inline formatting
+  text = text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  // Build output line by line, collecting list items
+  const out = [];
+  let listBuf = [], listTag = '';
+
+  const flushList = () => {
+    if (!listBuf.length) return;
+    out.push(`<${listTag}>${listBuf.join('')}</${listTag}>`);
+    listBuf = []; listTag = '';
+  };
+
+  for (const raw of text.split('\n')) {
+    const hm  = raw.match(/^(#{1,3}) (.+)$/);
+    const olm = raw.match(/^\d+\. (.+)$/);
+    const ulm = raw.match(/^[-*] (.+)$/);
+    if (hm) {
+      flushList();
+      out.push(`<h${hm[1].length}>${hm[2]}</h${hm[1].length}>`);
+    } else if (olm) {
+      if (listTag && listTag !== 'ol') flushList();
+      listTag = 'ol'; listBuf.push(`<li>${olm[1]}</li>`);
+    } else if (ulm) {
+      if (listTag && listTag !== 'ul') flushList();
+      listTag = 'ul'; listBuf.push(`<li>${ulm[1]}</li>`);
+    } else if (raw.trim() === '') {
+      flushList(); out.push('');
+    } else {
+      flushList(); out.push(raw);
+    }
+  }
+  flushList();
+
+  // Group consecutive text lines into <p> blocks
+  let html = '', para = [];
+  const flushPara = () => {
+    if (!para.length) return;
+    html += `<p>${para.join('<br>')}</p>`;
+    para = [];
+  };
+  for (const line of out) {
+    if (line === '') {
+      flushPara();
+    } else if (/^<[huo]/.test(line) || /^\x00B/.test(line)) {
+      flushPara(); html += line;
+    } else {
+      para.push(line);
+    }
+  }
+  flushPara();
+
+  // Restore stashed blocks
+  blocks.forEach((b, i)  => { html = html.replaceAll(`\x00B${i}\x00`, b); });
+  inlines.forEach((c, i) => { html = html.replaceAll(`\x00I${i}\x00`, c); });
+
+  return html;
+}
+
+const modelLabels  = { claude: 'Claude Opus 4', gpt: 'GPT-4o', gemini: 'Gemini 1.5', auto: 'Auto' };
 const domainLabels = {
   structural:   '🏗 Structural / Arch',
   strategy:     '📊 Strategy',
@@ -1027,8 +1103,8 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// focus textarea on load
 document.addEventListener('DOMContentLoaded', () => {
+  loadHistory();
   document.getElementById('promptInput').focus();
 });
 </script>
