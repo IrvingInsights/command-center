@@ -437,6 +437,30 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   .msg { animation: fadeIn 0.25s ease-out; }
 
+  /* Code block copy button */
+  .code-wrap { position: relative; margin: 10px 0; }
+  .code-wrap pre { margin: 0; }
+  .code-copy {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    border-radius: 5px; padding: 2px 8px;
+    font-size: 11px; color: var(--muted); cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+    opacity: 0;
+  }
+  .code-wrap:hover .code-copy { opacity: 1; }
+  .code-copy:hover { background: rgba(255,255,255,0.12); color: var(--white); }
+
+  /* New conversation button */
+  .new-chat-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 12px; color: var(--muted);
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
+  }
+  .new-chat-btn:hover { border-color: var(--cyan-dim); color: var(--cyan); }
+
   /* Responsive */
   @media (max-width: 900px) {
     .sidebar { display: none; }
@@ -486,6 +510,8 @@
   </div>
 
   <div class="header-spacer"></div>
+
+  <button class="new-chat-btn" onclick="newConversation()" title="New conversation">✏ New</button>
 
   <div class="status-pill" id="statusPill" onclick="checkHealth()" title="Click to refresh status">
     <div class="status-dot" id="statusDot"></div>
@@ -557,7 +583,7 @@
 
     <!-- History -->
     <div style="padding:10px 12px 6px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
-      <div class="sidebar-label" style="padding:0 4px; margin-bottom:0">Session History</div>
+      <div class="sidebar-label" style="padding:0 4px; margin-bottom:0">History</div>
       <button onclick="clearHistory()" title="Clear history" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;transition:color 0.15s;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--muted)'">Clear</button>
     </div>
     <div class="history-list" id="historyList">
@@ -622,7 +648,7 @@
         </button>
         <textarea
           id="promptInput"
-          placeholder="Ask anything across your 6 domains…"
+          placeholder="Ask anything across your 7 domains…"
           rows="1"
           onkeydown="handleKeydown(event)"
           oninput="handleInput(this)"
@@ -632,7 +658,7 @@
         </button>
       </div>
       <div class="input-footer">
-        <span class="input-hint" id="modelHint">⚡ Auto-routing active — best model chosen per prompt</span>
+        <span class="input-hint" id="modelHint">⚡ Auto-routing active — best model chosen per prompt · Enter to send · Shift+Enter for new line</span>
         <span class="char-count" id="charCount"></span>
       </div>
     </div>
@@ -736,10 +762,10 @@ function buildFileContext() {
 
 // ── MODEL SELECTION ──────────────────────────────────────
 const MODEL_HINTS = {
-  auto:   '⚡ Auto-routing active — best model chosen per prompt',
-  claude: '🟠 Claude Opus 4 — strategy, writing, analysis',
-  gpt:    '🟢 GPT-4o — code, APIs, structured output',
-  gemini: '🟣 Gemini 1.5 Pro — research, lookup, synthesis',
+  auto:   '⚡ Auto-routing active — best model chosen per prompt · Enter to send · Shift+Enter for new line',
+  claude: '🟠 Claude Opus 4 — strategy, writing, analysis · Enter to send · Shift+Enter for new line',
+  gpt:    '🟢 GPT-4o — code, APIs, structured output · Enter to send · Shift+Enter for new line',
+  gemini: '🟣 Gemini 1.5 Pro — research, lookup, synthesis · Enter to send · Shift+Enter for new line',
 };
 
 function setModel(m) {
@@ -793,7 +819,7 @@ function handleInput(el) {
 }
 
 function handleKeydown(e) {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+  if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     sendMessage();
   }
@@ -804,6 +830,27 @@ function sendQuick(text) {
   ta.value = text;
   handleInput(ta);
   ta.focus();
+}
+
+function newConversation() {
+  document.getElementById('messages').querySelectorAll('.msg').forEach(el => el.remove());
+  const welcome = document.getElementById('welcomeState');
+  if (welcome) welcome.style.display = '';
+  attachedFiles = [];
+  renderAttachments();
+  updateAttachBtn();
+  const ta = document.getElementById('promptInput');
+  ta.value = '';
+  handleInput(ta);
+  ta.focus();
+}
+
+function copyCode(btn) {
+  const code = btn.nextElementSibling.querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+  }).catch(() => showToast('Copy failed'));
 }
 
 // ── SEND MESSAGE ─────────────────────────────────────────
@@ -834,7 +881,7 @@ async function sendMessage() {
 
   // Hide welcome
   const welcome = document.getElementById('welcomeState');
-  if (welcome) welcome.remove();
+  if (welcome) welcome.style.display = 'none';
 
   // Show user message
   appendMessage('user', displayMsg, null, null, null);
@@ -1014,7 +1061,7 @@ function renderMarkdown(text) {
   // Stash fenced code blocks so inner content is never transformed
   const blocks = [];
   text = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => {
-    blocks.push(`<pre><code>${escapeHtml(code.replace(/\n$/, ''))}</code></pre>`);
+    blocks.push(`<div class="code-wrap"><button class="code-copy" onclick="copyCode(this)">Copy</button><pre><code>${escapeHtml(code.replace(/\n$/, ''))}</code></pre></div>`);
     return `\x00B${blocks.length - 1}\x00`;
   });
   const inlines = [];
