@@ -21,10 +21,11 @@ import json
 import os
 import re
 import sys
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, Response, request, send_from_directory
+from flask import Flask, Response, redirect, request, send_from_directory
 
 # Reuse template + constants from content_pipeline
 try:
@@ -152,6 +153,76 @@ def run():
 
 def _sse(payload: dict) -> str:
     return f"data: {json.dumps(payload)}\n\n"
+
+
+# ── FINANCE TRIGGER ─────────────────────────────────────────────────────────
+# Allows a Notion page link to trigger the finance-email-check GitHub Action.
+# Required env vars:
+#   GITHUB_TRIGGER_TOKEN  — a GitHub PAT with "workflow" scope
+#   FINANCE_TRIGGER_SECRET — a secret token embedded in the Notion link
+#                            to prevent unauthorized triggers
+#
+# Notion link format:  https://<your-server>/trigger-finance-check?token=SECRET
+
+@app.route("/trigger-finance-check")
+def trigger_finance_check():
+    expected_token = os.environ.get("FINANCE_TRIGGER_SECRET", "")
+    provided_token = request.args.get("token", "")
+
+    if not expected_token or provided_token != expected_token:
+        return (
+            "<h2 style='font-family:sans-serif;color:#c00'>Unauthorized.</h2>"
+            "<p style='font-family:sans-serif'>Invalid or missing token.</p>",
+            403,
+        )
+
+    gh_token = os.environ.get("GITHUB_TRIGGER_TOKEN", "")
+    if not gh_token:
+        return (
+            "<h2 style='font-family:sans-serif;color:#c00'>Not configured.</h2>"
+            "<p style='font-family:sans-serif'>GITHUB_TRIGGER_TOKEN is not set on this server.</p>",
+            500,
+        )
+
+    api_url = (
+        "https://api.github.com/repos/IrvingInsights/command-center"
+        "/actions/workflows/finance-email-check.yml/dispatches"
+    )
+    payload = json.dumps({"ref": "main"}).encode()
+    req = urllib.request.Request(
+        api_url,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {gh_token}",
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            success = resp.status == 204
+    except Exception as exc:
+        return (
+            f"<h2 style='font-family:sans-serif;color:#c00'>GitHub API error.</h2>"
+            f"<p style='font-family:sans-serif'>{exc}</p>",
+            502,
+        )
+
+    if success:
+        return (
+            "<html><head><meta http-equiv='refresh' content='3;url=https://github.com/"
+            "IrvingInsights/command-center/actions/workflows/finance-email-check.yml'>"
+            "</head><body style='font-family:sans-serif;padding:40px'>"
+            "<h2 style='color:#1a7a6e'>Finance check triggered ✓</h2>"
+            "<p>The GitHub Action is now running. Redirecting to the Actions log&hellip;</p>"
+            "</body></html>"
+        )
+    return (
+        "<h2 style='font-family:sans-serif;color:#c00'>Unexpected response from GitHub.</h2>",
+        502,
+    )
 
 
 # ---------------------------------------------------------------------------
