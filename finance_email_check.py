@@ -3,8 +3,8 @@ finance_email_check.py
 ======================
 Reads Gmail for financial notification emails via IMAP and cross-checks
 extracted dollar amounts against the Finta-synced Notion transactions
-database.  Prints a plain-text discrepancy report so sync gaps surface
-without manual review.
+database.  Unmatched amounts are written as pages into a Finance Flags
+database in Notion so they appear on the Finance Dashboard automatically.
 
 No Google Cloud Console or OAuth setup required.  Uses a Gmail App Password,
 which takes about two minutes to create:
@@ -14,6 +14,8 @@ Environment variables
 ---------------------
 NOTION_API_TOKEN                   — Notion integration secret
 NOTION_FINANCE_TRANSACTIONS_DB_ID  — Finta-synced transactions database ID
+NOTION_FINANCE_FLAGS_DB_ID         — Finance Flags database ID (created by
+                                     setup_notion_finance_page.py)
 GMAIL_ADDRESS                      — e.g. danirving1@gmail.com
 GMAIL_APP_PASSWORD                 — 16-character app password from Gmail settings
 FINANCE_EMAIL_LOOKBACK_DAYS        — (optional) days to look back, default 30
@@ -22,6 +24,7 @@ FINANCE_EMAIL_LOOKBACK_DAYS        — (optional) days to look back, default 30
 import datetime as _dt
 import email as _email
 import email.header as _header
+import email.utils as _eutils
 import imaplib
 import os
 import re
@@ -32,7 +35,6 @@ from notion_client import Client as NotionClient
 
 AMOUNT_RE = re.compile(r'\$\s*([\d,]+(?:\.\d{2})?)')
 
-# IMAP search terms — OR'd together so we catch any financial email type
 _IMAP_SUBJECT_TERMS = [
     "transaction", "payment", "statement", "alert",
     "balance", "deposit", "withdrawal", "finta",
@@ -48,7 +50,6 @@ def _get_env(name: str, *, required: bool = True) -> Optional[str]:
 
 
 def _decode_header(raw: str) -> str:
-    """Decode a potentially encoded email header value to plain text."""
     parts = _header.decode_header(raw or "")
     decoded = []
     for part, charset in parts:
@@ -60,7 +61,6 @@ def _decode_header(raw: str) -> str:
 
 
 def _get_text_body(msg) -> str:
-    """Extract plain-text body from an email.Message object."""
     if msg.is_multipart():
         for part in msg.walk():
             if part.get_content_type() == "text/plain":
@@ -73,25 +73,26 @@ def _get_text_body(msg) -> str:
     return ""
 
 
+def _parse_email_date(date_str: str) -> str:
+    """Convert an RFC 2822 email Date header to an ISO date string."""
+    try:
+        return _eutils.parsedate_to_datetime(date_str).date().isoformat()
+    except Exception:
+        return _dt.date.today().isoformat()
+
+
 # ── GMAIL VIA IMAP ───────────────────────────────────────────────────────────
 
 def fetch_financial_emails(
     gmail_address: str, app_password: str, lookback_days: int
 ) -> List[Dict]:
-    """
-    Connect to Gmail via IMAP and return financial notification emails
-    from the last ``lookback_days`` days.
-    """
     cutoff_dt = _dt.date.today() - _dt.timedelta(days=lookback_days)
-    # IMAP date format: DD-Mon-YYYY
     since_str = cutoff_dt.strftime("%d-%b-%Y")
 
     mail = imaplib.IMAP4_SSL("imap.gmail.com")
     mail.login(gmail_address, app_password)
     mail.select("inbox", readonly=True)
 
-    # Build an IMAP OR search across all subject keywords
-    # IMAP OR is binary: OR (SUBJECT "a") (OR (SUBJECT "b") (SUBJECT "c")) ...
     def _build_or_query(terms: List[str]) -> str:
         subjects = [f'SUBJECT "{t}"' for t in terms]
         while len(subjects) > 1:
@@ -105,16 +106,12 @@ def fetch_financial_emails(
         return subjects[0]
 
     search_query = f'(SINCE "{since_str}" ({_build_or_query(_IMAP_SUBJECT_TERMS)}))'
-
     status, data = mail.search(None, search_query)
     if status != "OK" or not data[0]:
         mail.logout()
         return []
 
-    msg_ids = data[0].split()
-    # Limit to 150 most-recent to avoid slow runs on large inboxes
-    msg_ids = msg_ids[-150:]
-
+    msg_ids = data[0].split()[-150:]
     emails = []
     for mid in msg_ids:
         status, raw = mail.fetch(mid, "(RFC822)")
@@ -130,19 +127,18 @@ def fetch_financial_emails(
             "from":    sender,
             "subject": subject,
             "date":    date,
-            "amounts": list(dict.fromkeys(amounts)),  # deduplicated, order-preserved
+            "amounts": list(dict.fromkeys(amounts)),
         })
 
     mail.logout()
     return emails
 
 
-# ── NOTION ───────────────────────────────────────────────────────────────────
+# ── NOTION READ ──────────────────────────────────────────────────────────────
 
 def fetch_notion_amounts(
     notion: NotionClient, db_id: str, lookback_days: int
 ) -> List[float]:
-    """Return absolute transaction amounts from Notion for the lookback period."""
     cutoff = (_dt.date.today() - _dt.timedelta(days=lookback_days)).isoformat()
     amounts: List[float] = []
     cursor = None
@@ -171,20 +167,14 @@ def fetch_notion_amounts(
     return amounts
 
 
-# ── REPORT ───────────────────────────────────────────────────────────────────
+# ── CROSS-CHECK ──────────────────────────────────────────────────────────────
 
-def run_cross_check(
-    emails: List[Dict], notion_amounts: List[float], lookback_days: int
-) -> None:
-    """Flag email amounts that have no matching Notion transaction."""
-    print("\n" + "=" * 66)
-    print("  FINANCE EMAIL × NOTION CROSS-CHECK")
-    print(f"  Period : last {lookback_days} days  |  {_dt.date.today().isoformat()}")
-    print("=" * 66)
-    print(f"\n  Financial emails found in Gmail : {len(emails)}")
-    print(f"  Transactions found in Notion    : {len(notion_amounts)}\n")
-
+def compute_unmatched(
+    emails: List[Dict], notion_amounts: List[float]
+) -> List[Dict]:
+    """Return deduplicated list of {email, amount} dicts missing from Notion."""
     unmatched = []
+    seen: set = set()
     for em in emails:
         for amt_str in em["amounts"]:
             try:
@@ -193,23 +183,34 @@ def run_cross_check(
                 continue
             if amt < 1.00:
                 continue
-            if not any(abs(n - amt) < 0.02 for n in notion_amounts):
-                unmatched.append({"email": em, "amount": amt})
+            if any(abs(n - amt) < 0.02 for n in notion_amounts):
+                continue
+            key = (amt, em["subject"][:40])
+            if key in seen:
+                continue
+            seen.add(key)
+            unmatched.append({"email": em, "amount": amt})
+    return unmatched
+
+
+def print_report(
+    emails: List[Dict],
+    notion_amounts: List[float],
+    unmatched: List[Dict],
+    lookback_days: int,
+) -> None:
+    print("\n" + "=" * 66)
+    print("  FINANCE EMAIL × NOTION CROSS-CHECK")
+    print(f"  Period : last {lookback_days} days  |  {_dt.date.today().isoformat()}")
+    print("=" * 66)
+    print(f"\n  Financial emails found in Gmail : {len(emails)}")
+    print(f"  Transactions found in Notion    : {len(notion_amounts)}\n")
 
     if not unmatched:
         print("  OK — no discrepancies. Gmail amounts align with Notion.\n")
     else:
-        # Deduplicate by (amount, subject prefix)
-        seen: set = set()
-        unique = []
+        print(f"  WARNING — {len(unmatched)} amount(s) in email missing from Notion:\n")
         for item in unmatched:
-            key = (item["amount"], item["email"]["subject"][:40])
-            if key not in seen:
-                seen.add(key)
-                unique.append(item)
-
-        print(f"  WARNING — {len(unique)} amount(s) in email missing from Notion:\n")
-        for item in unique:
             print(f"  ${item['amount']:>10,.2f}  |  {item['email']['subject'][:55]}")
             print(f"               From : {item['email']['from'][:55]}")
             print(f"               Date : {item['email']['date'][:30]}\n")
@@ -224,11 +225,63 @@ def run_cross_check(
             print(f"  {'':22}  Amounts: {amts}\n")
 
 
+# ── NOTION WRITE-BACK ────────────────────────────────────────────────────────
+
+def write_flags_to_notion(
+    unmatched: List[Dict], notion: NotionClient, flags_db_id: str
+) -> int:
+    """
+    For each unmatched item, create a page in the Finance Flags database
+    unless an open flag for the same amount already exists.
+    Returns the count of new pages created.
+    """
+    created = 0
+    today = _dt.date.today().isoformat()
+
+    for item in unmatched:
+        amt = item["amount"]
+        subject = item["email"]["subject"][:100]
+
+        # Skip if an open flag for this amount already exists
+        existing = notion.databases.query(
+            database_id=flags_db_id,
+            filter={
+                "and": [
+                    {"property": "Amount", "number": {"equals": amt}},
+                    {"property": "Status", "select": {"does_not_equal": "Resolved"}},
+                    {"property": "Status", "select": {"does_not_equal": "False Positive"}},
+                ]
+            },
+            page_size=1,
+        )
+        if existing.get("results"):
+            continue
+
+        email_date = _parse_email_date(item["email"]["date"])
+        notion.pages.create(
+            parent={"database_id": flags_db_id},
+            properties={
+                "Email Subject": {
+                    "title": [{"text": {"content": subject}}]
+                },
+                "Amount":       {"number": amt},
+                "Sender":       {"rich_text": [{"text": {"content": item["email"]["from"][:200]}}]},
+                "Email Date":   {"date": {"start": email_date}},
+                "Flagged On":   {"date": {"start": today}},
+                "Status":       {"select": {"name": "Needs Review"}},
+            },
+        )
+        created += 1
+
+    return created
+
+
 # ── MAIN ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
     notion_token    = _get_env("NOTION_API_TOKEN")
     transactions_db = _get_env("NOTION_FINANCE_TRANSACTIONS_DB_ID")
+    flags_db_id     = os.getenv("NOTION_FINANCE_FLAGS_DB_ID")
     gmail_address   = _get_env("GMAIL_ADDRESS")
     app_password    = _get_env("GMAIL_APP_PASSWORD")
     lookback_days   = int(os.getenv("FINANCE_EMAIL_LOOKBACK_DAYS", "30"))
@@ -242,7 +295,21 @@ def main() -> None:
     amounts = fetch_notion_amounts(notion, transactions_db, lookback_days)
     print(f"  Found {len(amounts)} transaction(s) in Notion.")
 
-    run_cross_check(emails, amounts, lookback_days)
+    unmatched = compute_unmatched(emails, amounts)
+    print_report(emails, amounts, unmatched, lookback_days)
+
+    if flags_db_id:
+        if unmatched:
+            print(f"\nWriting flags to Notion ({flags_db_id})...")
+            n = write_flags_to_notion(unmatched, notion, flags_db_id)
+            print(f"  Created {n} new flag(s).  ({len(unmatched) - n} already tracked.)")
+        else:
+            print("\nNothing to flag — Notion is up to date.")
+    else:
+        print(
+            "\nTip: set NOTION_FINANCE_FLAGS_DB_ID to auto-create flags in Notion.\n"
+            "     Run the setup-notion-finance-page workflow to create the database."
+        )
 
 
 if __name__ == "__main__":

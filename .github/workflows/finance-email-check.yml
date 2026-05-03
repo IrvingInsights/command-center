@@ -27,6 +27,7 @@ jobs:
         env:
           NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
           NOTION_FINANCE_TRANSACTIONS_DB_ID: ${{ secrets.NOTION_FINANCE_TRANSACTIONS_DB_ID }}
+          NOTION_FINANCE_FLAGS_DB_ID: ${{ secrets.NOTION_FINANCE_FLAGS_DB_ID }}
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           # Optional: change lookback window (default 30 days)
