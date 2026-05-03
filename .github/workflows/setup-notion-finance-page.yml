@@ -1,0 +1,22 @@
+name: Setup Notion Finance Page (run once)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Add Finance Check section to Notion
+        env:
+          NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
+          FINANCE_PAGE_ID: 24846ef5886245f78fef02152df823d6
+          FINANCE_TRIGGER_URL: https://irving-mvp.onrender.com/trigger-finance-check?token=irving2026
+        run: python setup_notion_finance_page.py
